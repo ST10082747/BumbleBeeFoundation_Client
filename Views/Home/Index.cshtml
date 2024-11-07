@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Bumblebee Foundation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #hero {
+            height: 70vh; /* 70% of viewport height */
+            width: 150%; /* Full viewport width */
+            margin-left: calc(-50vw + 50%); /* Extend to the left */
+            margin-right: calc(-25vw + 25%); /* Extend to the right */
+            background-image: url('/Images/funding.jpg'); /* Update the path to your image */
+            background-size: cover; /* Cover the entire hero section */
+            background-position: center; /* Center the image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            color: white;
+            text-align: center;
+            padding: 40px;
+            width: 100%; /* Match the hero section width */
+            height: 100%; /* Match the hero section height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+            .overlay h1 {
+                font-size: 3rem;
+            }
+
+        #about {
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            #about img {
+                max-width: 200px; /* Adjust as needed */
+                height: auto;
+                margin-right: 20px; /* Space between the logo and text */
+            }
+
+            #about .text {
+                max-width: 800px;
+                line-height: 1.6;
+            }
+
+            #about h2 {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+            }
+
+            #about p {
+                font-size: 1.2rem;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="overlay">
+            <h1>Welcome to Bumblebee Foundation</h1>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <img src="/Images/logo.png" alt="Bumblebee Foundation Logo"> <!-- Update the path to your logo -->
+        <div class="text">
+            <h2>Bumblebee Foundation</h2>
+            <p>
+                The Bumblebee Foundation connects offshore sponsors with South African non-profits, amplifying impact and empowering communities to tackle social and environmental challenges.
+                Committed to transparency, accountability, and sustainability, we maximize donation effectiveness and ensure resources support long-term solutions.
+                Through collaboration, we strive to create a more equitable and resilient future for all.
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

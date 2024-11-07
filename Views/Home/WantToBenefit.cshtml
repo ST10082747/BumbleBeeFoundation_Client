@@ -1,0 +1,98 @@
+﻿@model BumbleBeeFoundation_Client.Models.WantToBenefitModel
+
+
+@{
+    ViewData["Title"] = "Want to Benefit";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+
+        .overlay h1 {
+            font-size: 3rem;
+        }
+
+        #about {
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            #about img {
+                max-width: 200px; /* Adjust as needed */
+                height: auto;
+                margin-right: 20px; /* Space between the logo and text */
+            }
+
+            #about .text {
+                max-width: 800px;
+                line-height: 1.6;
+            }
+
+            #about h2 {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+            }
+
+            #about p {
+                font-size: 1.2rem;
+            }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <h1>Want to request for funding? </h1>
+    </div>
+    <section id="about">
+       
+        <div class="text">
+           
+            <p>
+                Are you ready to propel your business to new heights? 
+                By partnering with the Bumblebee Foundation, your company can gain access to essential funding and resources that will fuel your growth and innovation.
+                Our support is designed to help you overcome financial hurdles, expand your reach, and achieve your strategic goals. 
+                With our backing, you’ll be able to focus on what you do best—transforming your vision into reality and making a meaningful impact in your industry.
+                Join us today and take the next step towards a brighter, more prosperous future for your business.
+
+
+            </p>
+        </div>
+    </section>
+    <div class="text-center mt-4">
+        <a class="btn btn-primary mr-2" asp-controller="Account" asp-action="Register">Register as a beneficiary company</a>
+
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Log in with company beneficiary account</a>
+
+    </div>
+ 
+    <!-- Include validation scripts -->
+    @section Scripts {
+        @await Html.PartialAsync("_ValidationScriptsPartial")
+    }
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <!-- Include Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

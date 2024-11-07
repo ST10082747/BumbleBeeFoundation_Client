@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    string userRole = Context.Session.GetString("UserRole");
+    string userEmail = Context.Session.GetString("UserEmail");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - The Bumblebee Foundation</title>
+    <link rel="stylesheet" href="~/css/home.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="top-bar">
+            <div class="contact-info">
+                @if (string.IsNullOrEmpty(userEmail))
+                {
+                    <span>Phone: 080 000 0000</span>
+
+                }
+                else
+                {
+                    <span>@userRole Account</span>
+                }
+            </div>
+
+            <div class="search-login">
+                @if (string.IsNullOrEmpty(userEmail))
+                {
+                    <!-- Show login and signup buttons -->
+                    <a class="btn btn-warning mr-2" asp-controller="Account" asp-action="Register">Create an Account</a>
+                    <a class="btn btn-warning" asp-controller="Account" asp-action="Login">Log in</a>
+                }
+                else
+                {
+                    <span>Logged in as: @userEmail</span>
+                    <a class="btn btn-warning ml-2" asp-controller="Account" asp-action="Logout">Log out</a>
+
+                }
+            </div>
+        </div>
+
+        <nav class="navbar">
+            <img src="~/Images/logo.png" alt="Bumblebee Foundation Logo" class="logo" />
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a asp-controller="Home" asp-action="AboutUs">About Us</a></li>
+                <li><a asp-controller="Home" asp-action="ContactUs">Contact Us</a></li>
+
+                @if (userRole == "Admin")
+                {
+                    <li><a asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a></li>
+                }
+                else if (userRole == "Company")
+                {
+                    <li><a asp-controller="Company" asp-action="Index">Company Dashboard</a></li>
+                }
+                else if (userRole == "Donor")
+                {
+                    <li><a asp-controller="Donor" asp-action="Index">Donor Dashboard</a></li>
+                }
+
+                @if (userRole == null)
+                {
+                    <!-- Show these options only if no one is logged in -->
+                    <li><a asp-controller="Home" asp-action="WantToDonate">Want to Donate</a></li>
+                    <li><a asp-controller="Home" asp-action="WantToBenefit">Want to Benefit</a></li>
+                }
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content area -->
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <!-- Footer section -->
+    <div class="wrapper">
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2024 - The Bumblebee Foundation - <a href="#">Privacy</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts section -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

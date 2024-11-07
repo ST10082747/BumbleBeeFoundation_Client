@@ -1,0 +1,103 @@
+﻿@model BumbleBeeFoundation_Client.Models.WantToDonateModel
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<title>Bumblebee Foundation</title>
+<head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+
+        .overlay h1 {
+            font-size: 3rem;
+        }
+
+    #about {
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        #about img {
+            max-width: 200px; /* Adjust as needed */
+            height: auto;
+            margin-right: 20px; /* Space between the logo and text */
+        }
+
+        #about .text {
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        #about h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        #about p {
+            font-size: 1.2rem;
+        }
+</style>
+</head>
+<body>
+    <h1>Want to become a Bumblebee Donor?</h1>
+    <!-- Hero Section -->
+    <section id="about">
+        <img src="/Images/logo.png" alt="Bumblebee Foundation Logo"> <!-- Update the path to your logo -->
+        <div class="text">         
+            <h3>Join the Bumblebee Foundation's mission to make a meaningful difference.</h3>
+            <p>
+                As a Bumblebee donor, you play a crucial role in empowering countless organizations striving to achieve their goals and dreams.
+                Your generous contribution helps us support a diverse range of initiatives,
+                from community development to innovative projects,
+                fostering growth and success where it's needed most.
+            </p>
+        </div>
+    </section>
+
+    <section id="about">
+        <img src="/Images/why.jpg" alt="Bumblebee Foundation Logo"> <!-- Update the path to your logo -->
+        <div class="text">
+            <h3>Why Donate?</h3>
+            <p>
+                <strong>1. Make an Impact:</strong> Your donation directly supports projects and organizations that align with your values and interests, creating tangible and positive changes in the community.
+            </p>
+            <p>
+                <strong>2. Empower Innovation:</strong> Help fund groundbreaking ideas and solutions that have the potential to transform industries and improve lives.
+            </p>
+            <p>
+                <strong>3. Support Growth:</strong> Assist businesses and nonprofits in reaching their full potential, from startups to established entities looking to scale and enhance their services.
+            </p>
+        </div>
+    </section>
+    <div class="text-center mt-4">
+        <a class="btn btn-primary mr-2" asp-controller="Account" asp-action="Register">Register as a donour</a>
+
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Log in with donour account</a>
+
+    </div>
+    
+    
+    <!-- Include validation scripts -->
+    @section Scripts {
+        @await Html.PartialAsync("_ValidationScriptsPartial")
+    }
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <!-- Include Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

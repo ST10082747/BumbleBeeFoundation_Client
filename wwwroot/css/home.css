@@ -1,0 +1,137 @@
+﻿/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+.custom-login-button {
+    background-color: yellow;
+    color: black;
+    border-color: black;
+}
+
+    .custom-login-button:hover {
+        background-color: black;
+        color: yellow;
+        border-color: black;
+    }
+/* Top Bar */
+.top-bar {
+    background-color: #004d00;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.contact-info span {
+    margin-right: 20px;
+}
+
+.search-login {
+    display: flex;
+    align-items: center;
+}
+
+    .search-login input {
+        padding: 5px;
+        margin-right: 10px;
+    }
+
+.search-button, .account-button, .login-button {
+    background-color: #009933;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 2px solid #ffd700;
+}
+
+    .navbar ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+    }
+
+    .navbar li {
+        margin-left: 20px;
+    }
+
+    .navbar a {
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+    }
+
+        .navbar a:hover {
+            color: #ff6600;
+        }
+
+.logo {
+    height: 50px;
+}
+
+/* Main Content */
+.main-content {
+    display: flex;
+    padding: 20px;
+}
+
+.carousel {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+}
+
+    .carousel img {
+        width: 150px;
+        height: auto;
+        border-radius: 8px;
+    }
+
+.foundation-info {
+    flex: 2;
+    padding-left: 20px;
+}
+
+    .foundation-info h2 {
+        color: #004d00;
+    }
+
+    .foundation-info p {
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+/* Footer */
+footer {
+    background-color: #004d00;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+}
+
+.footer-content p {
+    margin-bottom: 5px;
+}
+
+.social-icons {
+    margin-top: 5px;
+}
+
+    .social-icons img {
+        width: 30px;
+        margin: 0 10px;
+    }
