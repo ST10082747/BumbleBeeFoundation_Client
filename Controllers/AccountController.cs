@@ -3,6 +3,7 @@ using BumbleBeeFoundation_Client.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace BumbleBeeFoundation_Client.Controllers
 {
@@ -10,13 +11,17 @@ namespace BumbleBeeFoundation_Client.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public AccountController(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<AccountController> logger)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            // Use the named client if you registered it as "ApiHttpClient"
+            _httpClient = httpClientFactory.CreateClient("ApiHttpClient"); // If you registered it with a name in Program.cs
+
             _configuration = configuration;
-            _httpClient.BaseAddress = new Uri(_configuration["ApiBaseUrl"]); 
+            _logger = logger;
         }
+
 
         // GET: /Account/Login
         public IActionResult Login()
@@ -28,30 +33,56 @@ namespace BumbleBeeFoundation_Client.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             var response = await _httpClient.PostAsJsonAsync("api/account/login", model);
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<LoginResponse>(content); // Deserialize response
+                var result = JsonConvert.DeserializeObject<LoginResponse>(content);
 
-                // Simulate setting a session token or user data in cookies or session
+                // Store user data in session
                 HttpContext.Session.SetString("UserId", result.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", result.Role);
+                HttpContext.Session.SetString("UserEmail", result.UserEmail);
 
                 if (result.Role == "Company")
                 {
-                    HttpContext.Session.SetString("CompanyID", result.CompanyID.ToString());
+                    // Store company ID as an integer in the session
+                    HttpContext.Session.SetInt32("CompanyID", (int)result.CompanyID);
+
                     HttpContext.Session.SetString("CompanyName", result.CompanyName);
+                    HttpContext.Session.SetString("UserId", result.UserId.ToString());
+
+                    // Log after setting the session values
+                    _logger.LogInformation("Session set: CompanyID - {CompanyID}, CompanyName - {CompanyName}, UserId - {UserId}",
+                                           result.CompanyID, result.CompanyName, result.UserId);
+
+                    return RedirectToAction("Index", "Company");
                 }
 
-                // Redirect to home or another page after successful login
-                return RedirectToAction("Index", "Home");
+                else if (result.Role == "Admin")
+                {
+                    // Redirect to Admin dashboard
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                else if (result.Role == "Donor")
+                {
+                    // Redirect to Donor index
+                    return RedirectToAction("Index", "Donor");
+                }
+                else
+                {
+                    // Redirect to Home page
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
-            ModelState.AddModelError("", "Invalid login attempt.");
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View(model);
         }
 
@@ -128,6 +159,13 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             ModelState.AddModelError("", "Password reset failed. Please try again.");
             return View(model);
+        }
+
+        public IActionResult Logout()
+        {
+            // Clear the session
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

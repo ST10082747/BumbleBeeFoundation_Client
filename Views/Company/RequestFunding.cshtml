@@ -1,0 +1,37 @@
+﻿@model FundingRequestViewModel
+
+<h2 class="my-4">Request Funding</h2>
+
+<form asp-action="RequestFunding" method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
+    <div class="form-group mb-3">
+        <label asp-for="CompanyName" class="form-label">Company Name</label>
+        <input asp-for="CompanyName" class="form-control" placeholder="Enter your company name" />
+        <span asp-validation-for="CompanyName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="ProjectDescription" class="form-label">Project Description</label>
+        <textarea asp-for="ProjectDescription" class="form-control" placeholder="Describe the project"></textarea>
+        <span asp-validation-for="ProjectDescription" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="RequestedAmount" class="form-label">Requested Amount (R)</label>
+        <input asp-for="RequestedAmount" class="form-control" placeholder="Enter the amount in Rands" />
+        <span asp-validation-for="RequestedAmount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="ProjectImpact" class="form-label">Project Impact</label>
+        <textarea asp-for="ProjectImpact" class="form-control" placeholder="Explain the expected impact of the project"></textarea>
+        <span asp-validation-for="ProjectImpact" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="attachments" class="form-label">Attachments</label>
+        <input type="file" name="attachments" id="attachments" multiple class="form-control-file" />
+        <small class="form-text text-muted">Please upload proof of project planning, licenses, quotations, registration, and proof of a bank account.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
+</form>

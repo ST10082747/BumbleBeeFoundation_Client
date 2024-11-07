@@ -1,0 +1,51 @@
+﻿@using System.Globalization
+
+@model FundingRequestViewModel
+
+@{
+    var southAfricanCulture = new CultureInfo("af-ZA");
+}
+
+<h2>Funding Request Confirmation</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Request ID</dt>
+    <dd class="col-sm-9">@Model.RequestID</dd>
+
+    <dt class="col-sm-3">Project Description</dt>
+    <dd class="col-sm-9">@Model.ProjectDescription</dd>
+
+    <dt class="col-sm-3">Requested Amount (ZAR)</dt> <!-- Added currency symbol -->
+    <dd class="col-sm-9">@Model.RequestedAmount.ToString("C", southAfricanCulture)</dd>
+
+    <dt class="col-sm-3">Project Impact</dt>
+    <dd class="col-sm-9">@Model.ProjectImpact</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Submitted At</dt>
+    <dd class="col-sm-9">@Model.SubmittedAt.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+</dl>
+
+<h3>Attachments</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>File Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attachment in Model.Attachments)
+        {
+            <tr>
+                <td>@attachment.FileName</td>
+                <td><a asp-action="DownloadAttachment" asp-route-id="@attachment.AttachmentID">Download</a></td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<a asp-action="Index" asp-controller="Company" class="btn btn-primary">Done, Return to Dashboard</a>

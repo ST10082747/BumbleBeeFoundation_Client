@@ -78,6 +78,7 @@ namespace BumbleBeeFoundation_Client.Models
         public string Role { get; set; }
         public int? CompanyID { get; set; }
         public string CompanyName { get; set; }
+        public string UserEmail { get; set; }
     }
 
 }

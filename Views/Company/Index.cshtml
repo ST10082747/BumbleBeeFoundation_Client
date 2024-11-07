@@ -1,0 +1,139 @@
+﻿@model CompanyViewModel
+@{
+    ViewData["Title"] = "Company Dashboard";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    h2 {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 2rem;
+        color: #2c3e50;
+    }
+
+    .dashboard-wrapper {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 20px;
+    }
+
+    .dashboard-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 40%;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        border-bottom: 2px solid #f1c40f;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+    }
+
+    dl.row {
+        display: block;
+    }
+
+    dl.row dt,
+    dl.row dd {
+        display: block;
+        font-size: 1rem;
+        margin: 10px 0;
+    }
+
+    dl.row dt {
+        font-weight: bold;
+        color: #34495e;
+    }
+
+    dl.row dd {
+        color: #2c3e50;
+        margin-left: 0;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    ul li {
+        margin: 10px 0;
+    }
+
+    ul li a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    ul li a:hover {
+        text-decoration: underline;
+        color: #2980b9;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-wrapper {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            width: 80%;
+        }
+    }
+</style>
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model != null)
+{
+    <div class="dashboard-wrapper">
+        <div class="dashboard-container">
+            <h3>Company Information</h3>
+            <dl class="row">
+                <dt>Company Name</dt>
+                <dd>@Model.CompanyName</dd>
+                <dt>Contact Email</dt>
+                <dd>@Model.ContactEmail</dd>
+                <dt>Contact Phone</dt>
+                <dd>@Model.ContactPhone</dd>
+                <dt>Date Joined</dt>
+                <dd>@Model.DateJoined.ToString("yyyy-MM-dd")</dd>
+                <dt>Status</dt>
+                <dd>@Model.Status</dd>
+
+                @if (Model.Status == "Rejected")
+                {
+                    <dt>Rejection Reason</dt>
+                    <dd>@Model.RejectionReason</dd>
+                }
+            </dl>
+        </div>
+
+        <div class="dashboard-container">
+            <h3>Quick Actions</h3>
+            <ul>
+                <li><a asp-action="RequestFunding">Request Funding</a></li>
+                <li><a asp-action="FundingRequestHistory">View Funding Request History</a></li>
+            </ul>
+            <a asp-controller="Donor" asp-action="Donate" class="btn btn-success my-2">Donate as a Company</a> <!-- Added donate button -->
+        </div>
+    </div>
+}
+else
+{
+    <p style="text-align:center;">No company information available.</p>
+}
+
+
