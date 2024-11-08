@@ -1,0 +1,28 @@
+﻿@model DonationViewModel
+@{
+    ViewData["Title"] = "Donation Confirmation";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h4>Thank you for your donation!</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Donation ID</dt>
+        <dd class="col-sm-9">@Model.DonationId</dd>
+        <dt class="col-sm-3">Donation Date</dt>
+        <dd class="col-sm-9">@Model.DonationDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+        <dt class="col-sm-3">Donation Type</dt>
+        <dd class="col-sm-9">@Model.DonationType</dd>
+        <dt class="col-sm-3">Amount</dt>
+        <dd class="col-sm-9">@Model.DonationAmount.ToString("C")</dd>
+        <dt class="col-sm-3">Donor Name</dt>
+        <dd class="col-sm-9">@Model.DonorName</dd>
+        <dt class="col-sm-3">Donor Email</dt>
+        <dd class="col-sm-9">@Model.DonorEmail</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to Dashboard</a>
+</div>

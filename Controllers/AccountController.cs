@@ -43,9 +43,34 @@ namespace BumbleBeeFoundation_Client.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<LoginResponse>(content);
+                _logger.LogInformation("API Response Content: {Content}", content);
 
-                // Store user data in session
+                var result = JsonConvert.DeserializeObject<LoginResponse>(content);
+                _logger.LogInformation("Deserialized Result: {@Result}", result);
+
+                // Check for null values before setting session
+                if (result.UserId == null)
+                {
+                    _logger.LogError("UserId is null in login response");
+                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                    return View(model);
+                }
+
+                if (string.IsNullOrEmpty(result.Role))
+                {
+                    _logger.LogError("Role is null in login response");
+                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                    return View(model);
+                }
+
+                if (string.IsNullOrEmpty(result.UserEmail))
+                {
+                    _logger.LogError("UserEmail is null in login response");
+                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                    return View(model);
+                }
+
+                // Now set the session values
                 HttpContext.Session.SetString("UserId", result.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", result.Role);
                 HttpContext.Session.SetString("UserEmail", result.UserEmail);
@@ -72,6 +97,11 @@ namespace BumbleBeeFoundation_Client.Controllers
                 }
                 else if (result.Role == "Donor")
                 {
+                    // Store user data in session
+                    HttpContext.Session.SetString("UserId", result.UserId.ToString());
+                    HttpContext.Session.SetString("UserRole", result.Role);
+                    HttpContext.Session.SetString("UserEmail", result.UserEmail);
+
                     // Redirect to Donor index
                     return RedirectToAction("Index", "Donor");
                 }

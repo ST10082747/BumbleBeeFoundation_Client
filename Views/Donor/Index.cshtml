@@ -1,0 +1,52 @@
+﻿@model List<FundingRequestViewModel>
+
+@{
+    ViewData["Title"] = "Donor Dashboard";
+}
+
+<h2 class="text-center my-4">@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item"><a asp-action="Donate" class="btn btn-primary btn-block">Make a Donation</a></li>
+                    <li class="list-group-item"><a asp-action="DonationHistory" class="btn btn-info btn-block">View Donation History</a></li>
+                    <li class="list-group-item"><a asp-action="FundingRequests" class="btn btn-secondary btn-block">View Companies</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Recent Funding Activity and Success Stories</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var request in Model)
+                        {
+                            <div class="list-group-item">
+                                <h6 class="mb-1"><strong>Company:</strong> @request.CompanyName</h6>
+                                <p class="mb-1"><strong>Project Description:</strong> @request.ProjectDescription</p>
+                                <p class="mb-1"><strong>Amount:</strong> R @request.RequestedAmount.ToString("N2")</p>
+                                <p class="mb-1"><strong>Status:</strong> @request.Status</p>
+                                <p class="mb-1"><strong>Submitted:</strong> @((request.SubmittedAt == DateTime.MinValue) ? "N/A" : request.SubmittedAt.ToString("MMMM dd, yyyy"))</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No recent donations found.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

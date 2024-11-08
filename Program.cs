@@ -1,4 +1,5 @@
 using BumbleBeeFoundation_Client.Models;
+using BumbleBeeFoundation_Client.Services;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,14 +27,13 @@ builder.Services.AddHttpClient("ApiHttpClient", client =>
 });
 
 
-// Example: Bind SmtpSettings from appsettings.json (uncomment if you need it)
-// builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+// Bind SmtpSettings from appsettings.json
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
-// Example: Register EmailService (uncomment if you need it)
-// builder.Services.AddTransient<IEmailService, EmailService>();
+// Register EmailService
+builder.Services.AddTransient<IEmailService, EmailService>();
 
-// Example: Register other services like CertificateService (uncomment if needed)
-// builder.Services.AddScoped<CertificateService>();
+builder.Services.AddScoped<CertificateService>();
 
 var app = builder.Build();
 
