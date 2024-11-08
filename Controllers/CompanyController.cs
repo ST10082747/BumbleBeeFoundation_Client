@@ -3,8 +3,6 @@ using System.Text;
 using BumbleBeeFoundation_Client.Models;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-//using System.Text.Json;
-//using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace BumbleBeeFoundation_Client.Controllers
@@ -17,7 +15,7 @@ namespace BumbleBeeFoundation_Client.Controllers
 
         public CompanyController(IHttpClientFactory httpClientFactory, ILogger<CompanyController> logger, IConfiguration configuration)
         {
-            _httpClient = httpClientFactory.CreateClient("ApiHttpClient");  // Use the named client
+            _httpClient = httpClientFactory.CreateClient("ApiHttpClient");  
             _logger = logger;
             _configuration = configuration;
         }
@@ -50,7 +48,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 if (companyInfo == null)
                 {
                     _logger.LogWarning("Deserialization returned null for CompanyViewModel.");
-                    return View("Error"); // Or handle appropriately
+                    return View("Error"); 
                 }
 
                 return View(companyInfo);
@@ -168,7 +166,7 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             if (fundingRequest == null)
             {
-                return View("Error"); // Handle deserialization failure appropriately
+                return View("Error"); 
             }
 
             return View(fundingRequest);
@@ -220,7 +218,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 string fileName = null;
                 if (contentDisposition != null)
                 {
-                    fileName = contentDisposition.FileName?.Trim('"');  // Remove quotes if present
+                    fileName = contentDisposition.FileName?.Trim('"'); 
 
                     // If filename is still null, try FileNameStar
                     if (string.IsNullOrEmpty(fileName))
@@ -288,7 +286,8 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             if (document == null || document.Length == 0)
             {
-                return BadRequest("No file uploaded.");
+                ModelState.AddModelError("", "No file uploaded.");
+                return RedirectToAction("FundingRequestHistory");
             }
 
             var companyId = HttpContext.Session.GetInt32("CompanyID");
@@ -299,17 +298,15 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(requestId.ToString()), "requestId");
+            content.Add(new StringContent(companyId.ToString()), "companyId"); 
 
             var fileContent = new StreamContent(document.OpenReadStream())
             {
-                Headers =
-            {
-                ContentType = new MediaTypeHeaderValue(document.ContentType)
-            }
+                Headers = { ContentType = new MediaTypeHeaderValue(document.ContentType) }
             };
             content.Add(fileContent, "document", document.FileName);
 
-            var response = await _httpClient.PostAsync("api/Company/UploadDocument", content);
+            var response = await _httpClient.PostAsync("api/company/upload-document", content);
             if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError("", "Failed to upload the document. Please try again.");
@@ -317,5 +314,7 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return RedirectToAction("FundingRequestHistory");
         }
+
+
     }
 }

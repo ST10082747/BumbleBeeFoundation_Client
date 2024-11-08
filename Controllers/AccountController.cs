@@ -96,17 +96,24 @@ namespace BumbleBeeFoundation_Client.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             var response = await _httpClient.PostAsJsonAsync("api/account/register", model);
 
             if (response.IsSuccessStatusCode)
             {
-                // Redirect to login page after successful registration
                 return RedirectToAction("Login");
             }
+            else
+            {
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", "Registration failed: " + errorResponse);
+                _logger.LogError($"Registration failed. Response: {errorResponse}");
+            }
 
-            ModelState.AddModelError("", "Registration failed. Please try again.");
             return View(model);
         }
 
