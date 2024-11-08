@@ -148,25 +148,22 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var response = await _httpClient.PostAsJsonAsync("api/account/forgotpassword", model);
+            var response = await _httpClient.PostAsJsonAsync("api/account/forgot-password", model);
 
             if (response.IsSuccessStatusCode)
             {
-                // Show a message that reset instructions were sent
-                ViewBag.Message = "Password reset instructions have been sent to your email.";
-            }
-            else
-            {
-                ModelState.AddModelError("", "Email not found.");
+                return RedirectToAction("ResetPassword", new { email = model.Email });
             }
 
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            ModelState.AddModelError("", "Forgot Password failed: " + errorResponse);
             return View(model);
         }
 
         // GET: /Account/ResetPassword
-        public IActionResult ResetPassword()
+        public IActionResult ResetPassword(string email)
         {
-            return View();
+            return View(new ResetPasswordViewModel { Email = email });
         }
 
         // POST: /Account/ResetPassword
@@ -175,17 +172,18 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var response = await _httpClient.PostAsJsonAsync("api/account/resetpassword", model);
+            var response = await _httpClient.PostAsJsonAsync("api/account/reset-password", model);
 
             if (response.IsSuccessStatusCode)
             {
-                // Redirect to login after successful password reset
                 return RedirectToAction("Login");
             }
 
-            ModelState.AddModelError("", "Password reset failed. Please try again.");
+            var errorResponse = await response.Content.ReadAsStringAsync();
+            ModelState.AddModelError("", "Password reset failed: " + errorResponse);
             return View(model);
         }
+
 
         public IActionResult Logout()
         {
