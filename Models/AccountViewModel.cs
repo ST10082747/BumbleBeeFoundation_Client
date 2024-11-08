@@ -42,13 +42,13 @@ namespace BumbleBeeFoundation_Client.Models
 
         // Company-specific fields (now optional)
         [Display(Name = "Company Name")]
-        public string CompanyName { get; set; }
+        public string? CompanyName { get; set; }
 
         [Display(Name = "Company Description")]
-        public string CompanyDescription { get; set; }
+        public string? CompanyDescription { get; set; }
 
         [Display(Name = "Contact Phone")]
-        public string ContactPhone { get; set; }
+        public string? ContactPhone { get; set; }
     }
 
     // password resets

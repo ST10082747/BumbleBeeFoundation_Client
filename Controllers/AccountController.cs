@@ -98,24 +98,43 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // Log the validation errors for ModelState
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        _logger.LogError($"ModelState error for {state.Key}: {error.ErrorMessage}");
+                    }
+                }
+
+                ModelState.AddModelError("", "Registration failed due to validation errors. Please check your input.");
                 return View(model);
             }
 
-            var response = await _httpClient.PostAsJsonAsync("api/account/register", model);
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/account/register", model);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Login");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", "Registration failed: " + errorResponse);
+                    _logger.LogError($"Registration failed. Response from API: {errorResponse}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var errorResponse = await response.Content.ReadAsStringAsync();
-                ModelState.AddModelError("", "Registration failed: " + errorResponse);
-                _logger.LogError($"Registration failed. Response: {errorResponse}");
+                _logger.LogError($"An error occurred while attempting to register: {ex.Message}");
+                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
             }
 
             return View(model);
         }
+
 
         // GET: /Account/ForgotPassword
         public IActionResult ForgotPassword()
