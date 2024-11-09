@@ -1,0 +1,50 @@
+﻿@using System.Globalization
+
+@model List<BumbleBeeFoundation_Client.Models.DonationReportItem>
+
+@{
+    ViewBag.Title = "Donation Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var southAfricanCulture = new CultureInfo("af-ZA");
+}
+
+<h2>Donation Report</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">
+        <strong>No donations available to display.</strong>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Donation ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount (ZAR)</th> 
+                <th>Donor Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var donation in Model)
+            {
+                <tr>
+                    <td>@donation.DonationID</td>
+                    <td>@donation.DonationDate.ToString("yyyy-MM-dd")</td>
+                    <td>@donation.DonationType</td>
+                    <td>@donation.DonationAmount.ToString("C", southAfricanCulture)</td>
+                    <td>@donation.DonorName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        <h3>Summary</h3>
+        <p>Total Donations: @Model.Count</p>
+        <p>Total Amount: @Model.Sum(d => d.DonationAmount).ToString("C", southAfricanCulture)</p>
+    </div>
+}

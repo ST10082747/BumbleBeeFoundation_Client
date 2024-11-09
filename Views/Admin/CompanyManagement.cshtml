@@ -1,0 +1,108 @@
+﻿@model IEnumerable<BumbleBeeFoundation_Client.Models.Company>
+
+@{
+    ViewData["Title"] = "Company Management";
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+
+<h1>Company Management</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.CompanyName)</th>
+            <th>@Html.DisplayNameFor(model => model.ContactEmail)</th>
+            <th>@Html.DisplayNameFor(model => model.ContactPhone)</th>
+            <th>@Html.DisplayNameFor(model => model.DateJoined)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>Rejection Reason</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.CompanyName)</td>
+                <td>@Html.DisplayFor(modelItem => item.ContactEmail)</td>
+                <td>@Html.DisplayFor(modelItem => item.ContactPhone)</td>
+                <td>@Html.DisplayFor(modelItem => item.DateJoined)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @if (item.Status == "Rejected")
+                    {
+                        @Html.DisplayFor(modelItem => item.RejectionReason)
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <!-- Flexbox to manage button layout -->
+                        <a asp-action="CompanyDetails" asp-route-id="@item.CompanyID" class="btn btn-info btn-sm">Details</a>
+
+                        @if (item.Status == "Pending")
+                        {
+                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal-@item.CompanyID">Approve</button>
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal-@item.CompanyID">Reject</button>
+
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal-@item.CompanyID" tabindex="-1" aria-labelledby="approveModalLabel-@item.CompanyID" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="approveModalLabel-@item.CompanyID">Approve Company</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to approve the company "@item.CompanyName"?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form asp-action="ApproveCompany" asp-route-id="@item.CompanyID" method="post">
+                                                <button type="submit" class="btn btn-success">Yes, Approve</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal-@item.CompanyID" tabindex="-1" aria-labelledby="rejectModalLabel-@item.CompanyID" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="rejectModalLabel-@item.CompanyID">Reject Company</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form asp-action="RejectCompany" asp-route-id="@item.CompanyID" method="post">
+                                                <div class="mb-3">
+                                                    <label for="rejectionReason-@item.CompanyID" class="form-label">Reason for Rejection</label>
+                                                    <textarea id="rejectionReason-@item.CompanyID" name="rejectionReason" class="form-control" placeholder="Enter rejection reason" required></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-danger">Submit</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a>
+

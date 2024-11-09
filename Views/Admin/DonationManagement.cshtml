@@ -1,0 +1,77 @@
+﻿@model IEnumerable<BumbleBeeFoundation_Client.Models.Donation>
+
+@{
+    ViewData["Title"] = "Donation Management";
+}
+
+<h1>Donation Management</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.DonationDate)</th>
+            <th>@Html.DisplayNameFor(model => model.DonationType)</th>
+            <th>@Html.DisplayNameFor(model => model.DonationAmount)</th>
+            <th>@Html.DisplayNameFor(model => model.DonorName)</th>
+            <th>@Html.DisplayNameFor(model => model.DonorEmail)</th>
+            <th>@Html.DisplayNameFor(model => model.PaymentStatus)</th>
+            <th>Document</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.DonationDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.DonationType)</td>
+                <!-- Display DonationAmount in Rands -->
+                <td>R @item.DonationAmount.ToString("N2")</td>
+                <td>@Html.DisplayFor(modelItem => item.DonorName)</td>
+                <td>@Html.DisplayFor(modelItem => item.DonorEmail)</td>
+                <td>@Html.DisplayFor(modelItem => item.PaymentStatus)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.DocumentFileName))
+                    {
+                        <a asp-action="DownloadFile"
+                           asp-route-id="@item.DonationID"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No document</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="DonationDetails" asp-route-id="@item.DonationID" class="btn btn-info btn-sm">Details</a>
+                    @if (item.PaymentStatus != "Processed")
+                    {
+                        <form asp-action="ApproveDonation" asp-route-id="@item.DonationID" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this donation?')">
+                                Approve Donation and Email Section 18 Certificate
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a>

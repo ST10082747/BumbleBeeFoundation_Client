@@ -1,0 +1,71 @@
+﻿@model List<BumbleBeeFoundation_Client.Models.Document>
+
+@{
+    ViewBag.Title = "Document Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Document Management</h2>
+<p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a></p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Document Name</th>
+            <th>Document Type</th>
+            <th>Company</th>
+            <th>Upload Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var document in Model)
+        {
+            <tr>
+                <td>@document.DocumentName</td>
+                <td>@document.DocumentType</td>
+                <td>@document.CompanyName</td>
+                <td>@document.UploadDate.ToString("yyyy-MM-dd")</td>
+                <td>@document.Status</td>
+                <td>
+                    @if (document.Status == "Pending")
+                    {
+                        @using (Html.BeginForm("ApproveDocument", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
+                        {
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                        }
+
+                        @using (Html.BeginForm("RejectDocument", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
+                        {
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                        }
+                    }
+                    else if (document.Status == "Approved")
+                    {
+                        @using (Html.BeginForm("DocumentsReceived", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
+                        {
+                            <button type="submit" class="btn btn-info btn-sm">Mark Documents Received</button>
+                        }
+                    }
+                    else if (document.Status == "Documents Received")
+                    {
+                        @using (Html.BeginForm("CloseRequest", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
+                        {
+                            <button type="submit" class="btn btn-secondary btn-sm" disabled>Request Now Closed</button>
+                        }
+                    }
+                    else
+                    {
+                        @document.Status
+                    }
+
+                    @Html.ActionLink("Download", "DownloadDocument", "Admin", new { documentId = document.DocumentID }, new { @class = "btn btn-primary btn-sm", target = "_blank" })
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+

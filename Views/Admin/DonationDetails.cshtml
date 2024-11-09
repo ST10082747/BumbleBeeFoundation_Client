@@ -1,0 +1,47 @@
+﻿@model BumbleBeeFoundation_Client.Models.Donation
+
+@{
+    ViewData["Title"] = "Donation Details";
+}
+
+<h1 class="text-center my-4">Donation Details</h1>
+
+<div class="card shadow-sm p-4 mb-4 bg-white rounded">
+    <div class="card-header">
+        <h4 class="card-title">Donation ID: @Model.DonationID</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonationDate)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonationDate)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonationType)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonationType)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonationAmount)</dt>
+            <!-- Display DonationAmount in Rands -->
+            <dd class="col-sm-9">R @Model.DonationAmount.ToString("N2")</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorName)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorName)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorIDNumber)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorIDNumber)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorTaxNumber)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorTaxNumber)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorEmail)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorEmail)</dd>
+
+            <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorPhone)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorPhone)</dd>
+
+
+        </dl>
+    </div>
+</div>
+
+<div class="text-center">
+    <a asp-action="DonationManagement" class="btn btn-secondary btn-lg">Back to List</a>
+</div>

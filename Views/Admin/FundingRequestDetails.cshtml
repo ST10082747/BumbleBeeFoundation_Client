@@ -1,0 +1,43 @@
+﻿@model BumbleBeeFoundation_Client.Models.FundingRequest
+
+@{
+    ViewData["Title"] = "Funding Request Details";
+}
+
+<h1>Funding Request Details</h1>
+
+<div>
+    <h4>Request ID: @Model.RequestID</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CompanyName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.CompanyName)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProjectDescription)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.ProjectDescription)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RequestedAmount)</dt>
+        <dd class="col-sm-9">R @Model.RequestedAmount.ToString("N2")</dd> <!-- Format as currency -->
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProjectImpact)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.ProjectImpact)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SubmittedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SubmittedAt)</dd>
+    </dl>
+</div>
+<div>
+    @if (Model.Status == "Pending")
+    {
+        <form asp-action="ApproveFundingRequest" asp-route-id="@Model.RequestID" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success">Approve</button>
+        </form>
+        <form asp-action="RejectFundingRequest" asp-route-id="@Model.RequestID" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Reject</button>
+        </form>
+    }
+    <a asp-action="FundingRequestManagement" class="btn btn-secondary">Back to List</a>
+</div>
