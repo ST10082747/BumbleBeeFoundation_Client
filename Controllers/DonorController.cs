@@ -261,14 +261,20 @@ namespace BumbleBeeFoundation_Client.Controllers
         public async Task<IActionResult> SearchFundingRequests(string term)
         {
             var response = await _httpClient.GetAsync($"api/Donor/SearchFundingRequests?term={HttpUtility.UrlEncode(term)}");
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var fundingRequests = JsonConvert.DeserializeObject<List<FundingRequestViewModel>>(content);
-                return Json(fundingRequests);
+
+                // Serialize using Newtonsoft.Json and return as ContentResult
+                var jsonResult = JsonConvert.SerializeObject(fundingRequests);
+                return Content(jsonResult, "application/json", Encoding.UTF8);
             }
 
-            return Json(new List<FundingRequestViewModel>());
+            // In case of an error, return an empty list serialized to JSON
+            var emptyResult = JsonConvert.SerializeObject(new List<FundingRequestViewModel>());
+            return Content(emptyResult, "application/json", Encoding.UTF8);
         }
 
         private bool IsValidIDNumber(string idNumber)
