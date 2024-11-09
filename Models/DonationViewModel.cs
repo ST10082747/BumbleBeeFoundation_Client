@@ -66,5 +66,18 @@ namespace BumbleBeeFoundation_Client.Models
         public string CVV { get; set; }
     }
 
+    public class DonationResponse
+    {
+        public int DonationId { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public T Data { get; set; }
+    }
 
 }

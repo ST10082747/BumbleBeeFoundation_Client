@@ -6,6 +6,7 @@ using iText.Layout.Properties;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Web;
@@ -53,68 +54,111 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // GET action to display the donation form
+        [HttpGet]
         public IActionResult Donate()
         {
-            return View();
+            var model = new DonationViewModel();
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Donate(DonationViewModel model, IFormFile? documentUpload)
         {
-            if (!ModelState.IsValid || !IsValidIDNumber(model.DonorIDNumber))
-            {
-                ModelState.AddModelError("DonorIDNumber", "Invalid ID number.");
-                return View(model);
-            }
-
-            if (documentUpload != null && documentUpload.Length > 0)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await documentUpload.CopyToAsync(memoryStream);
-                    model.DocumentPath = memoryStream.ToArray();
-                }
-            }
-
-            // Serialize the model using Newtonsoft.Json
-            var jsonContent = JsonConvert.SerializeObject(model);
-            var stringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync("api/Donor/Donate", stringContent);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                ModelState.AddModelError("", "Failed to process donation. Please try again.");
-                return View(model);
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DonationViewModel>(content);
-            model.DonationId = result.DonationId;
-
             try
             {
-                await _emailService.SendDonationNotificationAsync(model);
+                if (!ModelState.IsValid || !IsValidIDNumber(model.DonorIDNumber))
+                {
+                    ModelState.AddModelError("DonorIDNumber", "Invalid ID number.");
+                    return View(model);
+                }
+
+                // Save donation to API
+                var donationId = await SaveDonationToApi(model, documentUpload);
+
+                if (donationId == 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to process the donation.");
+                    return View(model);
+                }
+
+                // Set donation ID for email
+                model.DonationId = donationId;
+
+                // Send email notification
+                try
+                {
+                    await _emailService.SendDonationNotificationAsync(model);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send donation notification email.");
+                    // Continue processing even if email fails
+                }
+
+                // Generate PayFast form
+                string formHtml = GeneratePayFastForm(model, donationId);
+                return Content(formHtml, "text/html");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send donation notification email.");
+                _logger.LogError(ex, "Error processing donation");
+                ModelState.AddModelError(string.Empty, "An error occurred while processing your donation.");
+                return View(model);
+            }
+        }
+
+        private async Task<int> SaveDonationToApi(DonationViewModel model, IFormFile? documentUpload)
+        {
+            var content = new MultipartFormDataContent();
+
+            // Add model properties
+            content.Add(new StringContent(model.DonationType), "DonationType");
+            content.Add(new StringContent(model.DonationAmount.ToString()), "DonationAmount");
+            content.Add(new StringContent(model.DonorName), "DonorName");
+            content.Add(new StringContent(model.DonorIDNumber), "DonorIDNumber");
+            content.Add(new StringContent(model.DonorTaxNumber), "DonorTaxNumber");
+            content.Add(new StringContent(model.DonorEmail), "DonorEmail");
+            content.Add(new StringContent(model.DonorPhone), "DonorPhone");
+
+            // Add document if present
+            if (documentUpload != null && documentUpload.Length > 0)
+            {
+                var fileStream = documentUpload.OpenReadStream();
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(documentUpload.ContentType);
+                content.Add(fileContent, "documentUpload", documentUpload.FileName);
             }
 
+            // Call API
+            var response = await _httpClient.PostAsync("api/Donor/Donate", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var apiResponse = JsonConvert.DeserializeObject<ApiResponse<DonationResponse>>(responseContent);
+
+            if (response.IsSuccessStatusCode && apiResponse?.Success == true && apiResponse.Data != null)
+            {
+                return apiResponse.Data.DonationId;
+            }
+
+            _logger.LogError($"API call failed: {apiResponse?.Message ?? "Unknown error"}");
+            return 0;
+        }
+
+        private string GeneratePayFastForm(DonationViewModel model, int donationId)
+        {
             var payFastRequest = new PayFastRequest
             {
                 merchant_id = _payFastSettings.MerchantId,
                 merchant_key = _payFastSettings.MerchantKey,
                 name_first = model.DonorName?.Trim(),
                 email_address = model.DonorEmail?.Trim(),
-                m_payment_id = model.DonationId.ToString(),
+                m_payment_id = donationId.ToString(),
                 amount = model.DonationAmount.ToString("F2", CultureInfo.InvariantCulture),
                 item_name = $"Funding Donation - {model.DonationType}".Trim(),
                 payment_method = model.DonationType == "Monthly" ? "eft" : ""
             };
 
             string signature = payFastRequest.GenerateSignature(_payFastSettings.PassPhrase);
-
             var form = new StringBuilder();
             form.Append("<form action='");
             form.Append(_payFastSettings.UseSandbox ?
@@ -135,8 +179,14 @@ namespace BumbleBeeFoundation_Client.Controllers
             form.Append("</form>");
             form.Append("<script>document.getElementById('PayFastForm').submit();</script>");
 
-            return Content(form.ToString(), "text/html");
+            return form.ToString();
         }
+
+        private bool IsValidIDNumber(string idNumber)
+        {
+            return idNumber.Length == 13 && idNumber.All(char.IsDigit);
+        }
+
 
         public async Task<IActionResult> DonationConfirmation(int id)
         {
@@ -225,7 +275,10 @@ namespace BumbleBeeFoundation_Client.Controllers
                                 table.AddCell(donation.DonationId.ToString());
                                 table.AddCell(donation.DonationDate.ToString("yyyy-MM-dd"));
                                 table.AddCell(donation.DonationType);
-                                table.AddCell(donation.DonationAmount.ToString("C"));
+
+                                // Format DonationAmount in ZAR
+                                table.AddCell(donation.DonationAmount.ToString("C", CultureInfo.GetCultureInfo("en-ZA")));
+
                                 table.AddCell(donation.DonorName);
                             }
 
@@ -277,10 +330,6 @@ namespace BumbleBeeFoundation_Client.Controllers
             return Content(emptyResult, "application/json", Encoding.UTF8);
         }
 
-        private bool IsValidIDNumber(string idNumber)
-        {
-            return idNumber.Length == 13 && idNumber.All(char.IsDigit);
-        }
     }
 
 
