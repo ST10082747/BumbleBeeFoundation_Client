@@ -1,4 +1,5 @@
 ﻿using BumbleBeeFoundation_Client.Models;
+using BumbleBeeFoundation_Client.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -9,13 +10,18 @@ namespace BumbleBeeFoundation_Client.Controllers
     {
         private readonly ILogger<AdminController> _logger;
         private readonly HttpClient _httpClient;
+        private readonly IEmailService _emailService;
+        private readonly CertificateService _certificateService;
 
         public AdminController(
             ILogger<AdminController> logger,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory, IEmailService emailService,
+        CertificateService certificateService)
         {
             _logger = logger;
             _httpClient = httpClientFactory.CreateClient("ApiHttpClient");
+            _emailService = emailService;
+            _certificateService = certificateService;
         }
 
         // Dashboard Action - Fetches statistics from the API
@@ -284,6 +290,171 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return RedirectToAction(nameof(CompanyManagement));
         }
+
+
+
+        // donations
+        public async Task<IActionResult> DonationManagement()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/admin/donations");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var donations = JsonConvert.DeserializeObject<List<Donation>>(content);
+                    return View(donations);
+                }
+                else
+                {
+                    _logger.LogError("Failed to retrieve donations. Status code: {StatusCode}", response.StatusCode);
+                    TempData["ErrorMessage"] = "Failed to retrieve donations.";
+                    return View(new List<Donation>());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving donations");
+                TempData["ErrorMessage"] = "An error occurred while retrieving donations.";
+                return View(new List<Donation>());
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveDonation(int id)
+        {
+            try
+            {
+                // First, approve the donation through the API
+                var response = await _httpClient.PutAsync($"api/admin/donations/{id}/approve", null);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["ErrorMessage"] = "Failed to approve donation.";
+                    return RedirectToAction(nameof(DonationManagement));
+                }
+
+                // Get the updated donation details
+                var donationResponse = await _httpClient.GetAsync($"api/admin/donations/{id}");
+                if (donationResponse.IsSuccessStatusCode)
+                {
+                    var content = await donationResponse.Content.ReadAsStringAsync();
+                    var donation = JsonConvert.DeserializeObject<Donation>(content);
+
+                    if (donation != null)
+                    {
+                        // Generate certificate
+                        var certificatePdf = _certificateService.GenerateDonationCertificate(donation);
+
+                        // Send email with certificate
+                        await _emailService.SendDonationCertificateAsync(
+                            donation.DonorEmail,
+                            donation.DonorName,
+                            certificatePdf);
+
+                        TempData["SuccessMessage"] = "Donation approved and certificate sent successfully.";
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Failed to retrieve donation details after approval. Status code: {StatusCode}", donationResponse.StatusCode);
+                    TempData["ErrorMessage"] = "Donation approved but failed to send certificate.";
+                }
+
+                return RedirectToAction(nameof(DonationManagement));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while approving donation ID: {DonationId}", id);
+                TempData["ErrorMessage"] = "Failed to process donation approval.";
+                return RedirectToAction(nameof(DonationManagement));
+            }
+        }
+
+        public async Task<IActionResult> DonationDetails(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/admin/donations/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var donation = JsonConvert.DeserializeObject<Donation>(content);
+                    return View(donation);
+                }
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return NotFound();
+                }
+
+                _logger.LogError("Failed to retrieve donation details. Status code: {StatusCode}", response.StatusCode);
+                TempData["ErrorMessage"] = "Failed to retrieve donation details.";
+                return RedirectToAction(nameof(DonationManagement));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving donation details for ID: {DonationId}", id);
+                TempData["ErrorMessage"] = "An error occurred while retrieving donation details.";
+                return RedirectToAction(nameof(DonationManagement));
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFile(int id)
+        {
+            try
+            {
+                using var response = await _httpClient.GetAsync($"api/admin/donations/{id}/document");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var bytes = await response.Content.ReadAsByteArrayAsync();
+
+                    // Validate received bytes
+                    if (bytes == null || bytes.Length == 0)
+                    {
+                        _logger.LogWarning("Received empty document from API for donation ID: {DonationId}", id);
+                        return NotFound("Document is empty");
+                    }
+
+                    _logger.LogInformation("Received document with size: {Size} bytes for donation ID: {DonationId}",
+                        bytes.Length, id);
+
+                    var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/pdf";
+                    var contentDisposition = response.Content.Headers.ContentDisposition;
+                    var fileName = contentDisposition?.FileName?.Trim('"') ?? "document.pdf";
+
+                    // Set explicit headers
+                    Response.Headers["Content-Length"] = bytes.Length.ToString();
+                    Response.Headers["Content-Disposition"] = $"attachment; filename=\"{fileName}\"";
+                    Response.Headers["Content-Type"] = contentType;
+
+                    return new FileContentResult(bytes, contentType)
+                    {
+                        FileDownloadName = fileName
+                    };
+                }
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return NotFound("Document not found");
+                }
+
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogError("Failed to download document. Status code: {StatusCode}, Content: {Content}",
+                    response.StatusCode, errorContent);
+                return StatusCode(500, "Error downloading document");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while downloading document for donation ID: {DonationId}", id);
+                return StatusCode(500, "Error downloading document");
+            }
+        }
+
 
 
     }
