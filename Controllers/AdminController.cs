@@ -477,6 +477,49 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        public async Task<IActionResult> ViewAttachments(int requestId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Admin/FundingRequestAttachments/{requestId}");
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var attachments = JsonConvert.DeserializeObject<List<AttachmentViewModel>>(content);
+
+                return View(attachments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching attachments: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+        public async Task<IActionResult> DownloadAttachment(int attachmentId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Admin/DownloadAttachment/{attachmentId}");
+                response.EnsureSuccessStatusCode();
+
+                // Extract the file name from Content-Disposition, handling quotes if present
+                var contentDisposition = response.Content.Headers.ContentDisposition;
+                var fileName = contentDisposition?.FileName?.Trim('"') ?? "download";
+
+                var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+                var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                return File(fileBytes, contentType, fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error downloading attachment: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+
         // GET: Admin/FundingRequestDetails/{id}
         public async Task<IActionResult> FundingRequestDetails(int id)
         {
@@ -539,6 +582,112 @@ namespace BumbleBeeFoundation_Client.Controllers
             {
                 _logger.LogError($"Error rejecting funding request: {ex.Message}");
                 return View("Error");
+            }
+        }
+
+
+
+        // Documents 
+        // GET: Admin/Documents
+        public async Task<IActionResult> Documents()
+        {
+            List<Document> documents = new List<Document>();
+            HttpResponseMessage response = await _httpClient.GetAsync("api/admin/documents");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                documents = JsonConvert.DeserializeObject<List<Document>>(json);
+            }
+            else
+            {
+                _logger.LogError("Failed to fetch documents. Status Code: {StatusCode}", response.StatusCode);
+            }
+
+            return View(documents);
+        }
+
+        // POST: Admin/ApproveDocument
+        [HttpPost]
+        public async Task<IActionResult> ApproveDocument(int documentId)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(documentId), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"api/admin/approve-document?documentId={documentId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to approve document {DocumentId}. Status Code: {StatusCode}", documentId, response.StatusCode);
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // POST: Admin/RejectDocument
+        [HttpPost]
+        public async Task<IActionResult> RejectDocument(int documentId)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(documentId), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"api/admin/reject-document?documentId={documentId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to reject document {DocumentId}. Status Code: {StatusCode}", documentId, response.StatusCode);
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // POST: Admin/DocumentsReceived
+        [HttpPost]
+        public async Task<IActionResult> DocumentsReceived(int documentId)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(documentId), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"api/admin/documents-received?documentId={documentId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to mark document {DocumentId} as received. Status Code: {StatusCode}", documentId, response.StatusCode);
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // POST: Admin/CloseRequest
+        [HttpPost]
+        public async Task<IActionResult> CloseRequest(int documentId)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(documentId), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"api/admin/close-request?documentId={documentId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to close request for document {DocumentId}. Status Code: {StatusCode}", documentId, response.StatusCode);
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // GET: Admin/DownloadDocument
+        public async Task<IActionResult> DownloadDocument(int documentId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/admin/download-document/{documentId}");
+                response.EnsureSuccessStatusCode();  // Ensures the status code is successful
+
+                // Extract the file name from Content-Disposition, handling quotes if present
+                var contentDisposition = response.Content.Headers.ContentDisposition;
+                var fileName = contentDisposition?.FileName?.Trim('"') ?? "download";
+
+                var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+                var fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+                return File(fileBytes, contentType, fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error downloading document: {ex.Message}");
+                return View("Error");  // Return an error view if something goes wrong
             }
         }
 

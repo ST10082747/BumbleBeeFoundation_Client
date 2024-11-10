@@ -50,22 +50,20 @@
                     }
                     else if (document.Status == "Documents Received")
                     {
+                        // Mark as Received and provide a "Close Request" button
                         @using (Html.BeginForm("CloseRequest", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
                         {
-                            <button type="submit" class="btn btn-secondary btn-sm" disabled>Request Now Closed</button>
+                            <button type="submit" class="btn btn-secondary btn-sm">Close Request</button>
                         }
                     }
-                    else
+                    else if (document.Status == "Closed")
                     {
-                        @document.Status
+                        <span class="btn btn-secondary btn-sm" disabled>Request Closed</span>
                     }
 
                     @Html.ActionLink("Download", "DownloadDocument", "Admin", new { documentId = document.DocumentID }, new { @class = "btn btn-primary btn-sm", target = "_blank" })
                 </td>
-
             </tr>
         }
     </tbody>
 </table>
-
-

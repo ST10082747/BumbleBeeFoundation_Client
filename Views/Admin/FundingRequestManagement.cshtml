@@ -33,6 +33,12 @@
                 <td>
                     <div class="d-flex gap-2">
                         <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-info btn-sm">Details</a>
+                        @if (item.HasAttachments)
+                        {
+                            <a asp-action="ViewAttachments" asp-route-requestId="@item.RequestID" class="btn btn-primary btn-sm">View Attachments</a>
+                        }
+
+                       @*  <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-info btn-sm">Details</a> *@
 
                         @if (item.Status == "Pending")
                         {

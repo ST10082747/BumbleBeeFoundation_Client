@@ -32,5 +32,7 @@ namespace BumbleBeeFoundation_Client.Models
         public DateTime SubmittedAt { get; set; }
 
         public string AdminMessage { get; set; }
+
+        public bool HasAttachments { get; set; }
     }
 }

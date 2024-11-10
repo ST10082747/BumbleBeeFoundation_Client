@@ -1,0 +1,33 @@
+﻿@model IEnumerable<AttachmentViewModel>
+
+@{
+    ViewData["Title"] = "View Attachments";
+}
+
+<h1>Attachments</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.FileName)</th>
+                <th>@Html.DisplayNameFor(model => model.UploadedAt)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.FileName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UploadedAt)</td>
+                    <td>
+                        <a asp-action="DownloadAttachment" asp-route-attachmentId="@item.AttachmentID" class="btn btn-primary btn-sm">Download</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a asp-action="FundingRequestManagement" class="btn btn-secondary">Back to List</a>
