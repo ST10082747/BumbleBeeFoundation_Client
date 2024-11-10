@@ -456,6 +456,92 @@ namespace BumbleBeeFoundation_Client.Controllers
         }
 
 
+        // Funding management
+        // GET: Admin/FundingRequestManagement
+        public async Task<IActionResult> FundingRequestManagement()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Admin/FundingRequestManagement");
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var fundingRequests = JsonConvert.DeserializeObject<List<FundingRequest>>(content);
+
+                return View(fundingRequests);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching funding requests: {ex.Message}");
+                return View("Error"); // Optionally, direct to an error view
+            }
+        }
+
+        // GET: Admin/FundingRequestDetails/{id}
+        public async Task<IActionResult> FundingRequestDetails(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Admin/FundingRequestDetails/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning($"Funding request with ID {id} not found.");
+                    return NotFound();
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var fundingRequest = JsonConvert.DeserializeObject<FundingRequest>(content);
+
+                return View(fundingRequest);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching funding request details: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+        // POST: Admin/ApproveFundingRequest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveFundingRequest(int id, string adminMessage)
+        {
+            try
+            {
+                var messageContent = JsonConvert.SerializeObject(adminMessage);
+                var content = new StringContent(messageContent, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync($"api/Admin/ApproveFundingRequest?id={id}", content);
+                response.EnsureSuccessStatusCode();
+
+                return RedirectToAction(nameof(FundingRequestManagement));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error approving funding request: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+        // POST: Admin/RejectFundingRequest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectFundingRequest(int id)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync($"api/Admin/RejectFundingRequest?id={id}", null);
+                response.EnsureSuccessStatusCode();
+
+                return RedirectToAction(nameof(FundingRequestManagement));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error rejecting funding request: {ex.Message}");
+                return View("Error");
+            }
+        }
+
 
     }
 }
