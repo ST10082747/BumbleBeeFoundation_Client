@@ -691,6 +691,57 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Reports
+        // GET: Admin/DonationReport
+        public async Task<ActionResult> DonationReport()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/admin/donation-report");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var donations = JsonConvert.DeserializeObject<List<DonationReportItem>>(content);
+                    return View(donations);
+                }
+                else
+                {
+                    _logger.LogError("Failed to fetch donation report. Status code: {StatusCode}", response.StatusCode);
+                    // Handle error (return a view with a message, etc.)
+                    return View("Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching donation report");
+                return View("Error");
+            }
+        }
 
+        // GET: Admin/FundingRequestReport
+        public async Task<ActionResult> FundingRequestReport()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/admin/funding-request-report");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var requests = JsonConvert.DeserializeObject<List<FundingRequestReportItem>>(content);
+                    return View(requests);
+                }
+                else
+                {
+                    _logger.LogError("Failed to fetch funding request report. Status code: {StatusCode}", response.StatusCode);
+                    // Handle error (return a view with a message, etc.)
+                    return View("Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching funding request report");
+                return View("Error");
+            }
+        }
     }
 }
