@@ -1,136 +1,56 @@
 ﻿@model BumbleBeeFoundation_Client.Models.WantToBenefitModel
 
-
 @{
     ViewData["Title"] = "Contact Us";
 }
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
-    }
-
-    h2 {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 2rem;
-        color: #2c3e50;
-    }
-
-    .dashboard-wrapper {
-        display: flex;
-        justify-content: space-evenly;
-        margin-top: 20px;
-    }
-
-    .dashboard-container {
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 40%; /* Each container takes 40% */
-        padding: 20px;
-        margin: 20px 0;
-    }
-
-    h3 {
-        font-size: 1.5rem;
-        color: #2c3e50;
-        border-bottom: 2px solid #f1c40f;
-        padding-bottom: 5px;
-        margin-bottom: 15px;
-    }
-
-    dl.row {
-        display: block;
-    }
-
-    dl.row dt,
-    dl.row dd {
-        display: block;
-        font-size: 1rem;
-        margin: 10px 0;
-    }
-
-    dl.row dt {
-        font-weight: bold;
-        color: #34495e;
-    }
-
-    dl.row dd {
-        color: #2c3e50;
-        margin-left: 0;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    ul li {
-        margin: 10px 0;
-    }
-
-    ul li a {
-        color: #3498db;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    ul li a:hover {
-        text-decoration: underline;
-        color: #2980b9;
-    }
-
-    (max-width: 768px) {
-        .dashboard-wrapper {
-            flex-direction: column;
-            align-items: center;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" type="text/css" href="~/css/contactus.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
         }
-
-        .dashboard-container {
-            width: 80%;
-        }
-    }
-</style>
-
-
+        
+    </style>
+</head>
+<body>
 
     <div class="dashboard-wrapper">
         <div class="dashboard-container">
             <h3>Contact Us</h3>
             <dl class="row">
                 <dt>Company Name:</dt>
-            <dd>Bumblee bee foundation</dd> 
+                <dd>Bumblebee Foundation</dd>
                 <dt>Contact Email:</dt>
                 <dd>contact@bumblebeefoundation.org</dd>
-            <dt>Office Hours:</dt>
-            <dd>Monday - Friday: 9:00 AM - 5:00 PM</dd>
-            <dd>Saturday: 10:00 AM - 3:00 PM</dd>
-            <dd>Sunday: Closed</dd>
-            <dt> Social Media:</dt>
-            <dd>Facebook: facebook.com/bumblebeefoundation</dd>
-            <dd>Twitter: bumblebeefound</dd>
-            <dd>LinkedIn: linkedin.com/company/bumblebeefoundation</dd>
-
-
-
-        </dl>
+                <dt>Office Hours:</dt>
+                <dd>Monday - Friday: 9:00 AM - 5:00 PM</dd>
+                <dd>Saturday: 10:00 AM - 3:00 PM</dd>
+                <dd>Sunday: Closed</dd>
+                <dt>Social Media:</dt>
+                <dd>Facebook: facebook.com/bumblebeefoundation</dd>
+                <dd>Twitter: bumblebeefound</dd>
+                <dd>LinkedIn: linkedin.com/company/bumblebeefoundation</dd>
+            </dl>
         </div>
+    </div>
 
-
-    <!-- Include validation scripts -->
     @section Scripts {
         @await Html.PartialAsync("_ValidationScriptsPartial")
     }
 
-    <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include Popper.js -->
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-    <!-- Include Bootstrap JS -->
+   
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+</body>
 </html>

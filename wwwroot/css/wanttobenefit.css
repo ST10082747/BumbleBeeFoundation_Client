@@ -1,0 +1,43 @@
+﻿html,
+body {
+    height: 100%; /* Ensure full height for footer positioning */
+    margin: 0; /* Remove default margin */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('/images/globe.jpeg'); /* Background image */
+    background-size: cover; /* Scale image to cover */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* No repeat */
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Stack children vertically */
+    min-height: 100vh; /* Ensure body covers full viewport height */
+}
+
+.container-custom {
+    flex: 1; /* Allow this container to fill the space */
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+    border-radius: 10px; /* Rounded corners */
+    padding: 40px; /* Inner content padding */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    margin: 40px; /* Margin around the container */
+    color: #2c3e50; /* Text color */
+}
+
+h1 {
+    text-align: center; /* Center headings */
+    margin-bottom: 20px; /* Space below headings */
+}
+
+.text-center.mt-4 {
+    margin-bottom: 40px; /* Space at the bottom for buttons */
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    .container-custom {
+        width: 90%; /* Adjust container width on small screens */
+        margin: 0 auto; /* Center the container */
+    }
+}

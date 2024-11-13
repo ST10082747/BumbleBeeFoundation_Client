@@ -1,0 +1,17 @@
+﻿body {
+    background-image: url('/images/hands.jpeg'); /* Adjust the path to your image */
+    background-size: cover; /* Cover the entire page */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    color: #2c3e50; /* Text color for better visibility */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+.about-content {
+    padding: 20px; /* Padding inside the content area */
+    max-width: 800px; /* Max width of the content */
+    margin: 40px auto; /* Add 40px margin on top and bottom for spacing */
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background for better text visibility */
+    border-radius: 10px; /* Rounded corners */
+}

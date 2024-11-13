@@ -1,0 +1,59 @@
+﻿/* Body styling for the background image and general layout */
+body {
+    background-image: url('/images/glass.jpeg'); /* Adjust path if needed */
+    background-size: cover; /* Scales the image to cover the entire area */
+    background-position: center; /* Centers the image */
+    background-attachment: fixed; /* Keeps the background in place while scrolling */
+    background-repeat: no-repeat;
+}
+
+/* Container styling for improved readability */
+.dashboard-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.dashboard-container {
+    background-color: rgba(255, 255, 255, 0.8); /* Adjusted to match the About Us container */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    width: 60%; /* Adjust width as needed */
+    padding: 20px; /* Padding for container */
+    color: #2c3e50; /* Text color */
+    margin-bottom: 40px; /* Added bottom margin to create space from footer */
+}
+
+/* Styling for the description list */
+dl.row {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+    dl.row dt {
+        font-weight: bold;
+        color: #34495e; /* Color for terms */
+        margin-top: 10px; /* Space above terms */
+    }
+
+    dl.row dd {
+        margin: 5px 0 10px 20px; /* Indent descriptions for alignment */
+        color: #2c3e50; /* Color for descriptions */
+    }
+
+/* Headings */
+h3 {
+    text-align: center; /* Centered headings */
+    color: #2c3e50; /* Color for headings */
+    padding-bottom: 5px; /* Space below heading */
+    border-bottom: none; /* Removed the yellow line */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-container {
+        width: 90%; /* Full width on smaller screens */
+    }
+}
