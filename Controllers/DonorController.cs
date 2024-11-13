@@ -1,6 +1,8 @@
 ﻿using BumbleBeeFoundation_Client.Models;
 using BumbleBeeFoundation_Client.Services;
+using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
+using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Mvc;
@@ -204,6 +206,7 @@ namespace BumbleBeeFoundation_Client.Controllers
         public async Task<IActionResult> DonationHistory()
         {
             string userEmail = HttpContext.Session.GetString("UserEmail");
+            
             if (string.IsNullOrEmpty(userEmail))
             {
                 return RedirectToAction("Login", "Account");
@@ -223,6 +226,9 @@ namespace BumbleBeeFoundation_Client.Controllers
         public async Task<IActionResult> DownloadDonationHistory()
         {
             string userEmail = HttpContext.Session.GetString("UserEmail");
+            string Firstname = HttpContext.Session.GetString("FirstName");
+            string LastName = HttpContext.Session.GetString("LastName");
+
             if (string.IsNullOrEmpty(userEmail))
             {
                 return RedirectToAction("Login", "Account");
@@ -246,49 +252,108 @@ namespace BumbleBeeFoundation_Client.Controllers
                     {
                         using (var document = new iText.Layout.Document(pdfDoc))
                         {
-                            document.Add(new Paragraph("Bumble Bee Foundation")
-                                .SetTextAlignment(TextAlignment.CENTER)
-                                .SetFontSize(24)
-                                .SetBold());
+                           
+                            var headerColor = new DeviceRgb(30, 78, 120);  
+                            var borderColor = new DeviceRgb(200, 200, 200);  
+                            var outerBorderColor = new DeviceRgb(150, 150, 150); 
 
-                            document.Add(new Paragraph($"Report For {userEmail}:")
-                                .SetTextAlignment(TextAlignment.LEFT)
-                                .SetFontSize(12)
-                                .SetItalic());
+                            // Main container
+                            var mainContainer = new Div()
+                                .SetBorder(new SolidBorder(outerBorderColor, 2))
+                                .SetPadding(20);
 
-                            document.Add(new Paragraph("Your Donation History for project funds")
-                                .SetTextAlignment(TextAlignment.CENTER)
-                                .SetFontSize(20)
+                            // Header Section
+                            mainContainer.Add(new Paragraph("Bumble Bee Foundation")
+                                .SetFontSize(18)
                                 .SetBold()
+                                .SetFontColor(headerColor)
+                                .SetTextAlignment(TextAlignment.CENTER)
                                 .SetMarginBottom(20));
 
-                            Table table = new Table(5, false);
+                            // Report Title and Date
+                            mainContainer.Add(new Paragraph($"Donation History Report for {Firstname} {LastName} - {userEmail}")
+                                .SetFontSize(12)
+                                .SetFontColor(ColorConstants.DARK_GRAY)
+                                .SetTextAlignment(TextAlignment.CENTER)
+                                .SetItalic()
+                                .SetMarginBottom(10));
 
-                            table.AddHeaderCell("Donation ID");
-                            table.AddHeaderCell("Date");
-                            table.AddHeaderCell("Type");
-                            table.AddHeaderCell("Amount");
-                            table.AddHeaderCell("Donor Name");
+                            mainContainer.Add(new Paragraph($"Report Generated: {DateTime.Now:yyyy-MM-dd}")
+                                .SetFontSize(10)
+                                .SetTextAlignment(TextAlignment.CENTER)
+                                .SetMarginBottom(20));
 
-                            foreach (var donation in donations)
+                            // Donation Table
+                            Table table = new Table(new float[] { 2, 2, 2, 2, 3 }, true);
+                            table.SetWidth(UnitValue.CreatePercentValue(100))
+                                 .SetBorder(Border.NO_BORDER);
+
+                            // Header Row
+                            var headerBackgroundColor = new DeviceRgb(240, 240, 240);
+                            string[] headers = { "Donation ID", "Date", "Type", "Amount", "Donor Name" };
+
+                            foreach (var headerText in headers)
                             {
-                                table.AddCell(donation.DonationId.ToString());
-                                table.AddCell(donation.DonationDate.ToString("yyyy-MM-dd"));
-                                table.AddCell(donation.DonationType);
-
-                                // Format DonationAmount in ZAR
-                                table.AddCell(donation.DonationAmount.ToString("C", CultureInfo.GetCultureInfo("en-ZA")));
-
-                                table.AddCell(donation.DonorName);
+                                Cell headerCell = new Cell().Add(new Paragraph(headerText))
+                                    .SetBackgroundColor(headerBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.CENTER)
+                                    .SetBold()
+                                    .SetFontColor(headerColor)
+                                    .SetBorder(Border.NO_BORDER)
+                                    .SetPadding(5);
+                                table.AddHeaderCell(headerCell);
                             }
 
-                            document.Add(table);
+                            // Table Rows
+                            bool alternate = false;
+                            foreach (var donation in donations)
+                            {
+                                var rowBackgroundColor = alternate ? new DeviceRgb(248, 248, 248) : ColorConstants.WHITE;
+                                alternate = !alternate;
 
-                            document.Add(new Paragraph("Thank you for donating to our foundation! Your contributions help us make a difference.")
+                                table.AddCell(new Cell().Add(new Paragraph(donation.DonationId.ToString()))
+                                    .SetBackgroundColor(rowBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.CENTER)
+                                    .SetBorder(new SolidBorder(borderColor, 0.5f))
+                                    .SetPadding(5));
+
+                                table.AddCell(new Cell().Add(new Paragraph(donation.DonationDate.ToString("yyyy-MM-dd")))
+                                    .SetBackgroundColor(rowBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.CENTER)
+                                    .SetBorder(new SolidBorder(borderColor, 0.5f))
+                                    .SetPadding(5));
+
+                                table.AddCell(new Cell().Add(new Paragraph(donation.DonationType))
+                                    .SetBackgroundColor(rowBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.CENTER)
+                                    .SetBorder(new SolidBorder(borderColor, 0.5f))
+                                    .SetPadding(5));
+
+                                table.AddCell(new Cell().Add(new Paragraph(donation.DonationAmount.ToString("C", CultureInfo.GetCultureInfo("en-ZA"))))
+                                    .SetBackgroundColor(rowBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.RIGHT)
+                                    .SetBorder(new SolidBorder(borderColor, 0.5f))
+                                    .SetPadding(5));
+
+                                table.AddCell(new Cell().Add(new Paragraph(donation.DonorName))
+                                    .SetBackgroundColor(rowBackgroundColor)
+                                    .SetTextAlignment(TextAlignment.LEFT)
+                                    .SetBorder(new SolidBorder(borderColor, 0.5f))
+                                    .SetPadding(5));
+                            }
+
+                            mainContainer.Add(table);
+
+                            // Footer Section
+                            mainContainer.Add(new Paragraph("Thank you for your generous contributions to Bumble Bee Foundation. Your support helps us make a lasting impact.")
                                 .SetTextAlignment(TextAlignment.CENTER)
-                                .SetFontSize(16)
+                                .SetFontSize(12)
                                 .SetItalic()
-                                .SetMarginTop(20));
+                                .SetFontColor(ColorConstants.DARK_GRAY)
+                                .SetMarginTop(30));
+
+                            // Add mainContainer to document
+                            document.Add(mainContainer);
                         }
                     }
                 }

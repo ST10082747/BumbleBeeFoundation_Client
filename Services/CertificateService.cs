@@ -8,6 +8,7 @@ using iText.Kernel.Font;
 using iText.Kernel.Colors;
 using System.IO;
 using Document = iText.Layout.Document;
+using iText.Layout.Borders;
 
 namespace BumbleBeeFoundation_Client.Services
 {
@@ -22,39 +23,55 @@ namespace BumbleBeeFoundation_Client.Services
 
             try
             {
-                // Set default font
+                
+                var headerColor = new DeviceRgb(30, 78, 120);  
+                var borderColor = new DeviceRgb(200, 200, 200); 
+                var outerBorderColor = new DeviceRgb(150, 150, 150); 
+
+               
                 var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
                 document.SetFont(font);
 
-                // Title
+                // Main container with an outer border
+                var mainContainer = new Div()
+                    .SetBorder(new SolidBorder(outerBorderColor, 2))
+                    .SetPadding(20);
+
+                // Title Section
                 var title = new Paragraph("SECTION 18A CERTIFICATE")
                     .SetTextAlignment(TextAlignment.CENTER)
                     .SetFontSize(16)
-                    .SetBold();
-                document.Add(title);
+                    .SetBold()
+                    .SetFontColor(headerColor);
+                mainContainer.Add(title);
 
-                // Certificate number
-                var certNumber = new Paragraph($"Certificate No: {donation.DonationID}")
-                    .SetMarginTop(20);
-                document.Add(certNumber);
+                // Certificate Number
+                mainContainer.Add(new Paragraph($"Certificate No: {donation.DonationID}")
+                    .SetMarginTop(20)
+                    .SetFontSize(12)
+                    .SetBold());
 
-                // Legal text
+                // Legal Text
                 var legalText = new Paragraph(
                     "This Tax Certificate is issued in terms of Section 18A(1)(a) of the Income Tax Act of 1962. " +
                     "The donation received will be used exclusively for the objects of BumbleBee Foundation.")
-                    .SetMarginTop(20);
-                document.Add(legalText);
+                    .SetMarginTop(20)
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.DARK_GRAY);
+                mainContainer.Add(legalText);
 
-                // Donor details header
-                var donorHeader = new Paragraph("Donor Details:")
+                // Donor Details Header
+                mainContainer.Add(new Paragraph("Donor Details:")
                     .SetBold()
-                    .SetMarginTop(20);
-                document.Add(donorHeader);
+                    .SetFontSize(12)
+                    .SetMarginTop(20)
+                    .SetFontColor(headerColor));
 
-                // Donor details list
+                // Donor Details List
                 var details = new List()
                     .SetListSymbol("•")
-                    .SetMarginLeft(30);
+                    .SetMarginLeft(30)
+                    .SetFontSize(10);
 
                 details.Add(new ListItem($"Donor Name [Individual]: {donation.DonorName}"));
                 details.Add(new ListItem($"South African ID Number: {donation.DonorIDNumber}"));
@@ -64,39 +81,49 @@ namespace BumbleBeeFoundation_Client.Services
                 details.Add(new ListItem($"Date of Donation: {donation.DonationDate:dd/MM/yyyy}"));
                 details.Add(new ListItem($"Donation Type: {donation.DonationType}"));
                 details.Add(new ListItem($"Donation Amount: R {donation.DonationAmount:N2}"));
+                mainContainer.Add(details);
 
-                document.Add(details);
-
-                // Confirmation text
-                var confirmation = new Paragraph("\"I confirm that the above was received by BumbleBee Foundation.\"")
+                // Confirmation Text
+                var confirmation = new Paragraph("\"We hereby confirm that the above was received by BumbleBee Foundation.\"")
                     .SetMarginTop(20)
-                    .SetItalic();
-                document.Add(confirmation);
+                    .SetItalic()
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.DARK_GRAY);
+                mainContainer.Add(confirmation);
 
-                // Signature section
+                // Signature Section
                 var signature = new Paragraph("Signed by:\nBumbleBee Foundation")
-                    .SetMarginTop(40);
-                document.Add(signature);
+                    .SetMarginTop(40)
+                    .SetFontSize(10)
+                    .SetFontColor(headerColor);
+                mainContainer.Add(signature);
 
-                // Issue date
+                // Issue Date
                 var issueDate = new Paragraph($"Date of Issue: {DateTime.Now:dd/MM/yyyy}")
-                    .SetMarginTop(20);
-                document.Add(issueDate);
+                    .SetMarginTop(20)
+                    .SetFontSize(10);
+                mainContainer.Add(issueDate);
 
-                // Footer note
+                // Footer Note
                 var footerNote = new Paragraph(
                     "Please attach this certificate to your income tax return. " +
-                    "This certificate was issued without any alterations or erasures")
+                    "This certificate was issued without any alterations or erasures.")
                     .SetMarginTop(40)
-                    .SetFontSize(8);
-                document.Add(footerNote);
+                    .SetFontSize(8)
+                    .SetFontColor(ColorConstants.DARK_GRAY);
+                mainContainer.Add(footerNote);
 
                 // Trustees
                 var trustees = new Paragraph("Trustees: [Trustee Names]")
                     .SetMarginTop(20)
-                    .SetFontSize(8);
-                document.Add(trustees);
+                    .SetFontSize(8)
+                    .SetFontColor(ColorConstants.DARK_GRAY);
+                mainContainer.Add(trustees);
 
+                // Add mainContainer to the document
+                document.Add(mainContainer);
+
+                // Close document
                 document.Close();
                 return memoryStream.ToArray();
             }
