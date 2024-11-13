@@ -24,6 +24,17 @@
     <div class="login-links">
         <p>Forgot your password? <a asp-action="ForgotPassword">Reset it here</a></p>
     </div>
+
+    <!-- Display error message if login fails -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
 </div>
 
 @section Scripts {

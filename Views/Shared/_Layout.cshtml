@@ -15,6 +15,28 @@
     <title>@ViewData["Title"] - The Bumblebee Foundation</title>
     <link rel="stylesheet" href="~/css/home.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            
+        }
+
+        .container {
+            padding-top: 5px;
+            flex: 1; 
+        }
+
+        .wrapper footer {
+            position: relative;
+            width: 100%;
+            bottom: 0;
+            padding: 1rem 0;
+        }
+    </style>
 </head>
 <body>
 
@@ -24,7 +46,6 @@
                 @if (string.IsNullOrEmpty(userEmail))
                 {
                     <span>Phone: 080 000 0000</span>
-
                 }
                 else
                 {
@@ -43,7 +64,6 @@
                 {
                     <span>Logged in as: @Firstname, @LastName</span>
                     <a class="btn btn-warning ml-2" asp-controller="Account" asp-action="Logout">Log out</a>
-
                 }
             </div>
         </div>
@@ -78,12 +98,12 @@
         </nav>
     </header>
 
-    <!-- Main content area -->
+    
     <div class="container">
         @RenderBody()
     </div>
 
-    <!-- Footer section -->
+    
     <div class="wrapper">
         <footer class="border-top footer text-muted">
             <div class="container">
@@ -92,9 +112,10 @@
         </footer>
     </div>
 
-    <!-- Scripts section -->
+   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+

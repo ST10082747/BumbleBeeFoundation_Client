@@ -38,105 +38,69 @@ namespace BumbleBeeFoundation_Client.Controllers
                 return View(model);
             }
 
-            var response = await _httpClient.PostAsJsonAsync("api/account/login", model);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("API Response Content: {Content}", content);
+                var response = await _httpClient.PostAsJsonAsync("api/account/login", model);
 
-                var result = JsonConvert.DeserializeObject<LoginResponse>(content);
-                _logger.LogInformation("Deserialized Result: {@Result}", result);
-
-                // Check for null values before setting session
-                if (result.UserId == null)
+                if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("UserId is null in login response");
-                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
-                    return View(model);
-                }
+                    var content = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("API Response Content: {Content}", content);
 
-                if (string.IsNullOrEmpty(result.Role))
-                {
-                    _logger.LogError("Role is null in login response");
-                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
-                    return View(model);
-                }
+                    var result = JsonConvert.DeserializeObject<LoginResponse>(content);
+                    _logger.LogInformation("Deserialized Result: {@Result}", result);
 
-                if (string.IsNullOrEmpty(result.UserEmail))
-                {
-                    _logger.LogError("UserEmail is null in login response");
-                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
-                    return View(model);
-                }
+                    // Check for null values before setting session
+                    if (result.UserId == null || string.IsNullOrEmpty(result.Role) || string.IsNullOrEmpty(result.UserEmail) ||
+                        string.IsNullOrEmpty(result.FirstName) || string.IsNullOrEmpty(result.LastName))
+                    {
+                        _logger.LogError("Invalid login response data");
+                        ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                        return View(model);
+                    }
 
-                if (string.IsNullOrEmpty(result.FirstName))
-                {
-                    _logger.LogError("User Name is null in login response");
-                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
-                    return View(model);
-                }
-
-                if (string.IsNullOrEmpty(result.LastName))
-                {
-                    _logger.LogError("Last Name is null in login response");
-                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
-                    return View(model);
-                }
-
-                // Now set the session values
-                HttpContext.Session.SetString("UserId", result.UserId.ToString());
-                HttpContext.Session.SetString("UserRole", result.Role);
-                HttpContext.Session.SetString("UserEmail", result.UserEmail);
-                HttpContext.Session.SetString("FirstName", result.FirstName);
-                HttpContext.Session.SetString("LastName", result.LastName);
-               
-
-                if (result.Role == "Company")
-                {
-                    // Store company ID as an integer in the session
-                    HttpContext.Session.SetInt32("CompanyID", (int)result.CompanyID);
-
-                    HttpContext.Session.SetString("CompanyName", result.CompanyName);
-                    HttpContext.Session.SetString("UserId", result.UserId.ToString());
-                    HttpContext.Session.SetString("FirstName", result.FirstName);
-                    HttpContext.Session.SetString("LastName", result.LastName);
-
-                    // Log after setting the session values
-                    _logger.LogInformation("Session set: CompanyID - {CompanyID}, CompanyName - {CompanyName}, UserId - {UserId}",
-                                           result.CompanyID, result.CompanyName, result.UserId);
-
-                    return RedirectToAction("Index", "Company");
-                }
-
-                else if (result.Role == "Admin")
-                {
-                    HttpContext.Session.SetString("FirstName", result.FirstName);
-                    HttpContext.Session.SetString("LastName", result.LastName);
-                    // Redirect to Admin dashboard
-                    return RedirectToAction("Dashboard", "Admin");
-                }
-                else if (result.Role == "Donor")
-                {
-                    // Store user data in session
+                    // Set session variables
                     HttpContext.Session.SetString("UserId", result.UserId.ToString());
                     HttpContext.Session.SetString("UserRole", result.Role);
                     HttpContext.Session.SetString("UserEmail", result.UserEmail);
                     HttpContext.Session.SetString("FirstName", result.FirstName);
                     HttpContext.Session.SetString("LastName", result.LastName);
-                    // Redirect to Donor index
-                    return RedirectToAction("Index", "Donor");
+
+                    if (result.Role == "Company")
+                    {
+                        HttpContext.Session.SetInt32("CompanyID", (int)result.CompanyID);
+                        HttpContext.Session.SetString("CompanyName", result.CompanyName);
+                        return RedirectToAction("Index", "Company");
+                    }
+                    else if (result.Role == "Admin")
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    else if (result.Role == "Donor")
+                    {
+                        return RedirectToAction("Index", "Donor");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
-                    // Redirect to Home page
-                    return RedirectToAction("Index", "Home");
+                    _logger.LogError("API login request failed: {StatusCode}", response.StatusCode);
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
                 }
             }
-
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
+            catch (Exception ex)
+            {
+                // Handle API downtime or network errors
+                _logger.LogError("Error during API login request: {Message}", ex.Message);
+                ModelState.AddModelError(string.Empty, "Login Denied - the server is currently offline. Please try again later.");
+                return View(model);
+            }
         }
+
 
         // GET: /Account/Register
         public IActionResult Register()
@@ -180,12 +144,14 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
             catch (Exception ex)
             {
+                // Log the exception and notify the user
                 _logger.LogError($"An error occurred while attempting to register: {ex.Message}");
-                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+                ModelState.AddModelError("", "Registration Failed - our server is currently offline. Please try again later.");
             }
 
             return View(model);
         }
+
 
 
         // GET: /Account/ForgotPassword
@@ -198,17 +164,30 @@ namespace BumbleBeeFoundation_Client.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            var response = await _httpClient.PostAsJsonAsync("api/account/forgot-password", model);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return RedirectToAction("ResetPassword", new { email = model.Email });
+                var response = await _httpClient.PostAsJsonAsync("api/account/forgot-password", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("ResetPassword", new { email = model.Email });
+                }
+                else
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", "Forgot Password failed: " + errorResponse);
+                    _logger.LogError($"ForgotPassword API call failed: {errorResponse}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while attempting to process forgot password: {ex.Message}");
+                ModelState.AddModelError("", "Our server is currently offline. Please try again later.");
             }
 
-            var errorResponse = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", "Forgot Password failed: " + errorResponse);
             return View(model);
         }
 
