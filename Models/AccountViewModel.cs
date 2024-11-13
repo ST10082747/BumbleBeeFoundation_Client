@@ -79,6 +79,8 @@ namespace BumbleBeeFoundation_Client.Models
         public int? CompanyID { get; set; }
         public string? CompanyName { get; set; }
         public string UserEmail { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 
 }

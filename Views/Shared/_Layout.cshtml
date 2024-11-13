@@ -2,6 +2,9 @@
     ViewData["Title"] = "Home Page";
     string userRole = Context.Session.GetString("UserRole");
     string userEmail = Context.Session.GetString("UserEmail");
+    string Firstname = Context.Session.GetString("FirstName");
+    string LastName = Context.Session.GetString("LastName");
+
 }
 
 <!DOCTYPE html>
@@ -38,7 +41,7 @@
                 }
                 else
                 {
-                    <span>Logged in as: @userEmail</span>
+                    <span>Logged in as: @Firstname, @LastName</span>
                     <a class="btn btn-warning ml-2" asp-controller="Account" asp-action="Logout">Log out</a>
 
                 }

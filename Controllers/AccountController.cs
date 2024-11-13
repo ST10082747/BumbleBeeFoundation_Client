@@ -70,10 +70,27 @@ namespace BumbleBeeFoundation_Client.Controllers
                     return View(model);
                 }
 
+                if (string.IsNullOrEmpty(result.FirstName))
+                {
+                    _logger.LogError("User Name is null in login response");
+                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                    return View(model);
+                }
+
+                if (string.IsNullOrEmpty(result.LastName))
+                {
+                    _logger.LogError("Last Name is null in login response");
+                    ModelState.AddModelError(string.Empty, "Invalid login response from server");
+                    return View(model);
+                }
+
                 // Now set the session values
                 HttpContext.Session.SetString("UserId", result.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", result.Role);
                 HttpContext.Session.SetString("UserEmail", result.UserEmail);
+                HttpContext.Session.SetString("FirstName", result.FirstName);
+                HttpContext.Session.SetString("LastName", result.LastName);
+               
 
                 if (result.Role == "Company")
                 {
@@ -82,6 +99,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
                     HttpContext.Session.SetString("CompanyName", result.CompanyName);
                     HttpContext.Session.SetString("UserId", result.UserId.ToString());
+                    HttpContext.Session.SetString("FirstName", result.FirstName);
+                    HttpContext.Session.SetString("LastName", result.LastName);
 
                     // Log after setting the session values
                     _logger.LogInformation("Session set: CompanyID - {CompanyID}, CompanyName - {CompanyName}, UserId - {UserId}",
@@ -92,6 +111,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
                 else if (result.Role == "Admin")
                 {
+                    HttpContext.Session.SetString("FirstName", result.FirstName);
+                    HttpContext.Session.SetString("LastName", result.LastName);
                     // Redirect to Admin dashboard
                     return RedirectToAction("Dashboard", "Admin");
                 }
@@ -101,7 +122,8 @@ namespace BumbleBeeFoundation_Client.Controllers
                     HttpContext.Session.SetString("UserId", result.UserId.ToString());
                     HttpContext.Session.SetString("UserRole", result.Role);
                     HttpContext.Session.SetString("UserEmail", result.UserEmail);
-
+                    HttpContext.Session.SetString("FirstName", result.FirstName);
+                    HttpContext.Session.SetString("LastName", result.LastName);
                     // Redirect to Donor index
                     return RedirectToAction("Index", "Donor");
                 }
