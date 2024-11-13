@@ -14,90 +14,214 @@
 
         body {
             font-family: Arial, sans-serif;
+            color: #333;
+            overflow-x: hidden;
         }
 
-        #hero {
-            height: 70vh; 
-            width: 150%; 
+        .main-container {
+            display: flex;
+            width: 150%;
+            height: 100vh;
             margin-left: calc(-50vw + 50%); 
             margin-right: calc(-25vw + 25%); 
-            background-image: url('/Images/funding.jpg'); 
-            background-size: cover; 
-            background-position: center; 
+            
+            overflow: hidden;
+
+        }
+
+       
+        #hero {
+            flex: 1;  
+            height: 100vh;
+            background-image: url('/Images/funding.jpg');
+            background-size: cover;
+            background-position: center;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+
         }
 
         .overlay {
-            background-color: rgba(0, 0, 0, 0.5); 
+            background-color: rgba(0, 0, 0, 0.6);
             color: white;
             text-align: center;
-            padding: 40px;
-            width: 100%; 
-            height: 100%; 
+            padding: 60px;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             position: absolute;
             top: 0;
             left: 0;
+            transition: background-color 0.3s;
         }
 
-            .overlay h1 {
-                font-size: 3rem;
+        .overlay h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            animation: fadeIn 5s ease-in-out;
+            line-height: 1.2;
+        }
+
+        @@keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
             }
 
-        #about {
-            padding: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
+        #hero:hover .overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+       
+        #about {
+            flex: 1;  
+            height: 100vh;
+            padding: 60px 20px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background-color 0.3s;
+            margin: 0;
+        }
+
+        #about:hover {
+            background-color: #f0f0f0;
+        }
+
+        #about img {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #about .text {
+            max-width: 600px;
+            text-align: left;
+        }
+
+        #about h2 {
+            font-size: 2.5rem;
+            color: #388e3c;
+            margin-bottom: 15px;
+            border-left: 5px solid #388e3c;
+            padding-left: 15px;
+            animation: slideIn 1s ease-out;
+        }
+
+        #about p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        #about p:hover {
+            color: #333;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #388e3c;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(56, 142, 60, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #2c7030;
+            box-shadow: 0px 6px 12px rgba(56, 142, 60, 0.5);
+        }
+
+        @@keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @@media (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            #hero, #about {
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            #hero .overlay h1 {
+                font-size: 2.5rem;
+            }
+
+            #about {
+                align-items: center;
+            }
 
             #about img {
-                max-width: 200px; 
-                height: auto;
-                margin-right: 20px; 
-            }
-
-            #about .text {
-                max-width: 800px;
-                line-height: 1.6;
+                max-width: 200px;
             }
 
             #about h2 {
-                font-size: 2.5rem;
-                margin-bottom: 20px;
+                font-size: 2rem;
             }
 
-            #about p {
-                font-size: 1.2rem;
+            #about .text {
+                max-width: 100%;
+                text-align: center;
             }
+        }
     </style>
 </head>
 <body>
+    <div class="main-container">
+        
+        <section id="hero">
+            <div class="overlay">
+                <h1>Welcome to Bumblebee Foundation</h1>
+            </div>
+        </section>
 
-    <!-- Hero Section -->
-    <section id="hero">
-        <div class="overlay">
-            <h1>Welcome to Bumblebee Foundation</h1>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about">
-        <img src="/Images/logo.png" alt="Bumblebee Foundation Logo"> 
-        <div class="text">
-            <h2>Bumblebee Foundation</h2>
-            <p>
-                The Bumblebee Foundation connects offshore sponsors with South African non-profits, amplifying impact and empowering communities to tackle social and environmental challenges.
-                Committed to transparency, accountability, and sustainability, we maximize donation effectiveness and ensure resources support long-term solutions.
-                Through collaboration, we strive to create a more equitable and resilient future for all.
-            </p>
-        </div>
-    </section>
-
+        <section id="about">
+            <img src="/Images/logo.png" alt="Bumblebee Foundation Logo">
+            <div class="text">
+                <h2>Our Mission</h2>
+                <p>
+                    The Bumblebee Foundation connects offshore sponsors with South African non-profits, amplifying impact and empowering communities to tackle social and environmental challenges.
+                    Committed to transparency, accountability, and sustainability, we maximize donation effectiveness and ensure resources support long-term solutions.
+                    Through collaboration, we strive to create a more equitable and resilient future for all.
+                </p>
+                <a href="/Home/AboutUs" class="cta-button">Learn More</a>
+            </div>
+        </section>
+    </div>
 </body>
 </html>

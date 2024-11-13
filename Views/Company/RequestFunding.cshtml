@@ -1,7 +1,48 @@
 ﻿@model FundingRequestViewModel
 
-<h2 class="my-4">Request Funding</h2>
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+<style>
+   
+    .funding-request-form {
+        background-color: #fffbea;
+        border: 2px solid #388e3c; 
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
+        max-width: 500px;
+        margin: 0 auto;
+    }
 
+    h2 {
+        text-align: center;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        color: #388e3c;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        transition: border-color 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+    .btn-primary {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .form-text {
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>
+
+<h2 class="my-4">Request Funding</h2>
+<div class="funding-request-form">
 <form asp-action="RequestFunding" method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
     <div class="form-group mb-3">
         <label asp-for="CompanyName" class="form-label">Company Name</label>
@@ -35,3 +76,4 @@
 
     <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
 </form>
+</div>

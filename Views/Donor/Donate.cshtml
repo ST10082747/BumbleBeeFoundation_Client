@@ -3,46 +3,14 @@
     ViewData["Title"] = "Make a Donation";
 }
 
-<style>
-    /* Add some styling for the form */
-    .donation-form {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-    h3 {
-        margin-top: 20px;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 10px;
-    }
+<h1 class="text-center donor-dashboard-title">@ViewData["Title"]</h1>
 
-    .form-control {
-        border-radius: 5px;
-        transition: border-color 0.3s;
-    }
-
-        .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-
-    .btn-primary {
-        width: 100%;
-        margin-top: 20px;
-    }
-</style>
-
-<h2>@ViewData["Title"]</h2>
 
 <form asp-action="Donate" enctype="multipart/form-data" class="donation-form">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <!-- Donation Type and Amount -->
     <div class="form-group">
         <label asp-for="DonationType" class="control-label"></label>
         <select asp-for="DonationType" class="form-control">
@@ -58,7 +26,6 @@
         <span asp-validation-for="DonationAmount" class="text-danger"></span>
     </div>
 
-    <!-- Donor Info -->
     <h3>Donor Information</h3>
 
     <div class="form-group">
@@ -91,7 +58,6 @@
         <span asp-validation-for="DonorPhone" class="text-danger"></span>
     </div>
 
-    <!-- Card Details -->
     <h3>Payment Information</h3>
 
     <div class="form-group">
@@ -128,14 +94,12 @@
         <span class="text-danger" asp-validation-for="CVV"></span>
     </div>
 
-    <!-- Document Upload -->
     <div class="form-group">
         <label asp-for="DocumentUpload" class="control-label"></label>
         <input asp-for="DocumentUpload" type="file" class="form-control" />
         <span asp-validation-for="DocumentUpload" class="text-danger"></span>
     </div>
 
-    <!-- Submit Button -->
     <div class="form-group">
         <input type="submit" value="Donate" class="btn btn-primary" />
     </div>
