@@ -3,13 +3,14 @@
 @{
     ViewData["Title"] = "User Management";
 }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1>User Management</h1>
+<h1 class="text-center company-management-title">User Management</h1>
 
 <p>
-    <a asp-action="CreateUser" class="btn btn-primary">Create New User</a>
+    <a asp-action="CreateUser" class="btn btn-primary w-100 mt-4">Create New User</a>
 </p>
-<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a>
+<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a>
 <table class="table">
     <thead>
         <tr>

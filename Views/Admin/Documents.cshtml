@@ -5,8 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Document Management</h2>
-<p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a></p>
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+
+<h1 class="text-center document-management-title">Document Management</h1>
+<p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a></p>
 
 <table class="table">
     <thead>
@@ -63,7 +65,10 @@
 
                     @Html.ActionLink("Download", "DownloadDocument", "Admin", new { documentId = document.DocumentID }, new { @class = "btn btn-primary btn-sm", target = "_blank" })
                 </td>
+
             </tr>
         }
     </tbody>
 </table>
+
+

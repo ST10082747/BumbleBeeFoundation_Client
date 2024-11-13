@@ -33,6 +33,6 @@ namespace BumbleBeeFoundation_Client.Models
 
         public string AdminMessage { get; set; }
 
-        public bool HasAttachments { get; set; }
+        public bool? HasAttachments { get; set; }
     }
 }

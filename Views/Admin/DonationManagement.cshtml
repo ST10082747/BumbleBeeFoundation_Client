@@ -3,8 +3,9 @@
 @{
     ViewData["Title"] = "Donation Management";
 }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1>Donation Management</h1>
+<h1 class="text-center company-management-title">Donation Management</h1>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -74,4 +75,4 @@
     </tbody>
 </table>
 
-<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a>
+<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a>

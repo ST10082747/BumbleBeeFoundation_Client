@@ -7,8 +7,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var southAfricanCulture = new CultureInfo("af-ZA");
 }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h2>Funding Request Report</h2>
+<h1 class="text-center funding-request-report-title">Funding Request Report</h1>
 <p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a></p>
 
 @if (Model == null || !Model.Any())

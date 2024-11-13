@@ -3,8 +3,9 @@
 @{
     ViewData["Title"] = "Funding Request Management";
 }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1>Funding Request Management</h1>
+<h1 class="text-center company-management-title">Funding Request Management</h1>
 
 <table class="table table-striped">
     <thead>
@@ -33,12 +34,11 @@
                 <td>
                     <div class="d-flex gap-2">
                         <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-info btn-sm">Details</a>
-                        @if (item.HasAttachments)
+                        @if (item.HasAttachments.GetValueOrDefault())
                         {
                             <a asp-action="ViewAttachments" asp-route-requestId="@item.RequestID" class="btn btn-primary btn-sm">View Attachments</a>
                         }
 
-                       @*  <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-info btn-sm">Details</a> *@
 
                         @if (item.Status == "Pending")
                         {
@@ -93,4 +93,4 @@
     </tbody>
 </table>
 
-<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a>
+<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a>

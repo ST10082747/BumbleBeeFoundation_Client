@@ -3,60 +3,63 @@
 @{
     ViewData["Title"] = "Company Details";
 }
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1>Company Details</h1>
+<div class="company-details-container">
+    <h1>Company Details</h1>
+    <div class="company-details-box">
+        <h4>@Model.CompanyName</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CompanyName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CompanyName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ContactEmail)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ContactEmail)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ContactPhone)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ContactPhone)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.DateJoined)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.DateJoined)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+        </dl>
+    </div>
 
-<div>
-    <h4>@Model.CompanyName</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CompanyName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CompanyName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactEmail)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ContactEmail)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactPhone)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ContactPhone)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateJoined)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateJoined)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-</div>
-<div>
-    @if (Model.Status == "Pending")
-    {
-        <form asp-action="ApproveCompany" asp-route-id="@Model.CompanyID" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-success">Approve</button>
-        </form>
-        <form asp-action="RejectCompany" asp-route-id="@Model.CompanyID" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Reject</button>
-        </form>
-    }
-    <a asp-action="CompanyManagement" class="btn btn-secondary">Back to List</a>
+    <div class="action-buttons">
+        @if (Model.Status == "Pending")
+        {
+            <form asp-action="ApproveCompany" asp-route-id="@Model.CompanyID" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success">Approve</button>
+            </form>
+            <form asp-action="RejectCompany" asp-route-id="@Model.CompanyID" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+        }
+        <a asp-action="CompanyManagement" class="btn btn-secondary">Back to List</a>
+    </div>
 </div>
