@@ -1,6 +1,6 @@
 ﻿namespace BumbleBeeFoundation_Client.Models
 {
-    // Models/SmtpSettings.cs
+    
     public class SmtpSettings
     {
         public string Host { get; set; }

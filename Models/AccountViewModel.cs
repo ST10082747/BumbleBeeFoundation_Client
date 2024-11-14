@@ -69,7 +69,7 @@ namespace BumbleBeeFoundation_Client.Models
         [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        public string Email { get; set; }  // Hidden field for passing the email to the controller
+        public string Email { get; set; }  
     }
 
     public class LoginResponse

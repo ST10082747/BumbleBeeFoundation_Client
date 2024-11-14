@@ -44,7 +44,7 @@ namespace BumbleBeeFoundation_Client.Models
 
         public byte[]? DocumentPath { get; set; }
 
-        // New Card Fields
+       
         [Required]
         [Display(Name = "Card Number")]
         [CreditCard]

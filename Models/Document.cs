@@ -11,7 +11,7 @@
 
         public int CompanyID { get; set; }
 
-        public byte[] FileContent { get; set; } // New field to store the file content
-        public int FundingRequestID { get; set; } // Link to FundingRequest
+        public byte[] FileContent { get; set; } 
+        public int FundingRequestID { get; set; } 
     }
 }

@@ -28,7 +28,6 @@ namespace BumbleBeeFoundation_Client.Models
 
         public string Status { get; set; }
 
-        // Add this field for storing rejection reason
         [Display(Name = "Rejection Reason")]
         public string RejectionReason { get; set; }
     }

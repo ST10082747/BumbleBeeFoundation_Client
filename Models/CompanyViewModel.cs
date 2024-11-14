@@ -8,7 +8,7 @@
         public string ContactPhone { get; set; }
         public string Description { get; set; }
         public DateTime DateJoined { get; set; }
-        public string Status { get; set; } // E.g., Active, Inactive, Pending, etc.
+        public string Status { get; set; } 
 
         public string RejectionReason { get; set; }
 
