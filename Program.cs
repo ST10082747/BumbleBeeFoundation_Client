@@ -8,21 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add session services
-builder.Services.AddDistributedMemoryCache(); // Required for session
+builder.Services.AddDistributedMemoryCache(); 
 builder.Services.AddSession(options =>
 {
     // Configure session timeout and other options
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
-    options.Cookie.HttpOnly = true; // Make the session cookie HttpOnly
-    options.Cookie.IsEssential = true; // Mark session cookie as essential
+    options.IdleTimeout = TimeSpan.FromMinutes(30); 
+    options.Cookie.HttpOnly = true; 
+    options.Cookie.IsEssential = true; 
 });
 
 // Register HttpClient for API communication
-builder.Services.AddHttpClient();  // Registers the default HttpClient
+builder.Services.AddHttpClient();  
 builder.Services.AddHttpClient("ApiHttpClient", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7181/");
-    // Optionally, add any default headers, timeouts, etc.
+    // Add any default headers
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
@@ -47,7 +47,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseSession(); // Enable session middleware
+app.UseSession(); 
 app.UseRouting();
 
 app.UseAuthorization();
