@@ -18,17 +18,17 @@ html {
 }
 
 body {
-    /* Removed margin-bottom to prevent extra space after footer */
+    
 }
 
 .container-custom {
-    margin-bottom: 40px; /* Adjusted margin to create space before the footer */
+    margin-bottom: 40px; 
 }
 
 /* Footer styling */
 .footer {
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-    padding: 20px; /* Space inside the footer */
-    text-align: center; /* Center text */
-    margin-top: 40px; /* Adjust this to push the footer lower */
+    background-color: rgba(255, 255, 255, 0.9); 
+    padding: 20px; 
+    text-align: center; 
+    margin-top: 40px; 
 }

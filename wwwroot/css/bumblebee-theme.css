@@ -1,17 +1,17 @@
 ﻿/* Container styling */
 .form-container {
     background-color: #fffbea;
-    border: 2px solid #388e3c; /* Green border */
+    border: 2px solid #388e3c; 
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); /* Light yellow shadow */
+    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
     max-width: 500px;
     margin: 0 auto;
 }
 
     /* Heading styling */
     .form-container h2 {
-        color: #388e3c; /* Dark green color */
+        color: #388e3c; 
         font-weight: bold;
         font-family: 'Roboto', sans-serif;
         text-align: center;
@@ -22,7 +22,7 @@
     }
 
         .form-container h2:before {
-            content: '🐝'; /* Bumblebee icon in title */
+            content: '🐝'; 
             font-size: 1.5rem;
             margin-right: 5px;
         }
@@ -36,7 +36,7 @@
 
 /* Button styling */
 .btn-submit {
-    background-color: #388e3c; /* Green */
+    background-color: #388e3c; 
     color: #fff;
     font-size: 18px;
     font-weight: bold;
@@ -51,13 +51,13 @@
 }
 
     .btn-submit:hover {
-        background-color: #fbc02d; /* Yellow on hover */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
-/* Icon next to form labels (removed from registration input, retained for login/reset) */
+/* Icon next to form labels  */
 .form-label-icon:before {
-    content: ''; /* No bees here */
+    content: '';
     margin-right: 5px;
 }
 
@@ -65,10 +65,10 @@
 .forgot-password-container,
 .login-container {
     background-color: #fffbea;
-    border: 2px solid #388e3c; /* Green border */
+    border: 2px solid #388e3c; 
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); /* Light yellow shadow */
+    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
     max-width: 500px;
     margin: 0 auto;
 }
@@ -76,7 +76,7 @@
 /* Title Styling for Forgot Password and Login page */
 .forgot-password-title,
 .login-title {
-    color: #388e3c; /* Dark green color */
+    color: #388e3c; 
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
     text-align: center;
@@ -88,7 +88,7 @@
 
     .forgot-password-title:before,
     .login-title:before {
-        content: '🐝'; /* Bumblebee icon next to the title */
+        content: '🐝'; 
         font-size: 1.5rem;
         margin-right: 5px;
     }
@@ -98,25 +98,25 @@
     width: 100%;
     padding: 10px;
     border-radius: 10px;
-    background-color: #388e3c; /* Green */
+    background-color: #388e3c; 
     color: #ffffff;
     font-weight: bold;
     border: none;
     transition: background-color 0.3s;
-    display: flex; /* Changed to flex to center text and icon */
-    align-items: center; /* Align text and icon vertically */
-    justify-content: center; /* Center content (text and icon) horizontally */
-    gap: 10px; /* Space between the text and the icon */
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    gap: 10px; 
 }
 
     .btn-bumblebee:after {
-        content: '🐝'; /* Bumblebee icon after the button text */
-        font-size: 1.5rem; /* Adjust size of bee icon */
+        content: '🐝'; 
+        font-size: 1.5rem; 
     }
 
     .btn-bumblebee:hover {
-        background-color: #fbc02d; /* Yellow on hover */
-        color: #4b5320; /* Dark green */
+        background-color: #fbc02d;
+        color: #4b5320;
     }
 
 /* Input Styling for Form Controls */
@@ -177,12 +177,12 @@ h1.company-management-title {
 }
 
     .btn-success:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.donation-management-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -201,12 +201,12 @@ h1.donation-management-title {
 }
 
     .btn-primary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.funding-request-management-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -225,12 +225,12 @@ h1.funding-request-management-title {
 }
 
     .btn-primary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.user-management-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -249,7 +249,7 @@ h1.user-management-title {
 }
 
     .btn-primary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
@@ -265,10 +265,10 @@ h1.user-management-title {
 /* Box for the company details with background color and shadow */
 .company-details-box {
     background-color: #fffbea;
-    border: 2px solid #388e3c; /* Green border */
+    border: 2px solid #388e3c; 
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); /* Light yellow shadow */
+    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
     width: 80%;
     max-width: 800px;
     margin-bottom: 20px;
@@ -320,7 +320,7 @@ h1 {
     }
 
 h1.document-management-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -339,12 +339,12 @@ h1.document-management-title {
 }
 
     .btn-primary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.donation-details-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -363,12 +363,12 @@ h1.donation-details-title {
 }
 
     .btn-secondary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.donation-report-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -376,7 +376,7 @@ h1.donation-report-title {
 }
 
 h1.funding-request-report-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -395,12 +395,12 @@ h1.funding-request-report-title {
 }
 
     .btn-primary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 h1.admin-dashboard-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -408,7 +408,7 @@ h1.admin-dashboard-title {
 }
 
 h1.donor-dashboard-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -431,7 +431,7 @@ h1.donor-dashboard-title {
     .btn-primary:hover,
     .btn-info:hover,
     .btn-secondary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
@@ -451,14 +451,14 @@ h1.make-a-donation-title {
     padding: 20px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    background-color: #fbc02d; /* Yellow background */
+    background-color: #fbc02d;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Button styling */
 .btn-primary,
 .btn-secondary {
-    background-color: #388e3c; /* Green */
+    background-color: #388e3c; 
     color: #fff;
     font-weight: bold;
     border-radius: 8px;
@@ -469,13 +469,13 @@ h1.make-a-donation-title {
 
     .btn-primary:hover,
     .btn-secondary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 
 h1.donation-confirmation-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -483,7 +483,7 @@ h1.donation-confirmation-title {
 }
 
 h1.donation-history-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -491,7 +491,7 @@ h1.donation-history-title {
 }
 
 h1.companies-which-applied-for-funding-title {
-    color: #388e3c; /* Green color */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -500,21 +500,21 @@ h1.companies-which-applied-for-funding-title {
 
 /* Style for donor dashboard containers */
 .card {
-    background-color: #fffbea; /* Light yellow background */
-    border: 2px solid #388e3c; /* Green border */
-    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); /* Light yellow shadow */
-    border-radius: 8px; /* Soften the edges */
-    padding: 20px; /* Adjust padding for spacing */
-    margin-bottom: 20px; /* Add spacing between cards */
+    background-color: #fffbea; 
+    border: 2px solid #388e3c; 
+    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
+    border-radius: 8px; 
+    padding: 20px; 
+    margin-bottom: 20px; 
 }
 
 /* Style for the card title */
 .card-title {
-    color: #388e3c; /* Green text color */
+    color: #388e3c;
     font-weight: bold;
-    font-family: 'Roboto', sans-serif; /* Font style */
-    font-size: 1.2em; /* Adjust font size if needed */
-    margin-bottom: 10px; /* Space below title */
+    font-family: 'Roboto', sans-serif; 
+    font-size: 1.2em; 
+    margin-bottom: 10px; 
 }
 
 /* Style for buttons within the card */
@@ -528,18 +528,18 @@ h1.companies-which-applied-for-funding-title {
 }
 
     .btn-block:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 /* Make Company Dashboard cards wider */
 .card {
-    background-color: #fffbea; /* Light yellow background */
-    border: 2px solid #388e3c; /* Green border */
-    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); /* Light yellow shadow */
+    background-color: #fffbea; 
+    border: 2px solid #388e3c; 
+    box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
     border-radius: 8px;
     padding: 20px;
-    width: 100%; /* Ensures cards take full width */
+    width: 100%; 
 }
 
 /* Adjust card title styling */
@@ -553,20 +553,20 @@ h1.companies-which-applied-for-funding-title {
 
 /* Button style for "Quick Actions" section */
 .btn-quick-action {
-    background-color: #388e3c; /* Green button color */
+    background-color: #388e3c; 
     color: #fff;
     font-weight: bold;
     border-radius: 8px;
     padding: 10px;
-    width: 100%; /* Make buttons fill the container width */
+    width: 100%; 
     transition: background-color 0.3s ease;
 }
 
     .btn-quick-action:hover {
-        background-color: #fbc02d; /* Honey yellow on hover */
+        background-color: #fbc02d; 
     }
 
-/* Company details format - align with other website details */
+/* Company details format  */
 .company-detail h6 {
     color: #388e3c;
     font-weight: bold;
@@ -582,7 +582,7 @@ h1.companies-which-applied-for-funding-title {
 
 /* Center the heading */
 h1.request-funding-title {
-    color: #388e3c; /* Green */
+    color: #388e3c; 
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
@@ -596,14 +596,14 @@ h1.request-funding-title {
     padding: 20px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    background-color: #fbc02d; /* Yellow background */
+    background-color: #fbc02d; 
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Button styling */
 .btn-primary,
 .btn-secondary {
-    background-color: #388e3c; /* Green */
+    background-color: #388e3c; 
     color: #fff;
     font-weight: bold;
     border-radius: 8px;
@@ -614,13 +614,13 @@ h1.request-funding-title {
 
     .btn-primary:hover,
     .btn-secondary:hover {
-        background-color: #fbc02d; /* Honey yellow hover effect */
+        background-color: #fbc02d; 
         cursor: pointer;
     }
 
 /* Center the heading */
 h1.funding-request-history-title {
-    color: #388e3c; /* Green */
+    color: #388e3c;
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
     text-align: center;
