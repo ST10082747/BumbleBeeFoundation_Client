@@ -1,44 +1,179 @@
 ﻿@model BumbleBeeFoundation_Client.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
 
-<link rel="stylesheet" href="~/css/bumblebee-theme.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        html {
+            height: 100%;
+        }
 
-<div class="login-container">
-    <h2 class="login-title">Login</h2>
+        body {
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/globe.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <form asp-action="Login" method="post" class="login-form">
-        <div class="form-group">
-            <label asp-for="Email" class="control-label"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+        .container-custom {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+            max-width: 500px;
+            color: #2c3e50;
+        }
 
-        <div class="form-group">
-            <label asp-for="Password" class="control-label"></label>
-            <input asp-for="Password" class="form-control" type="password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
 
-        <button type="submit" class="btn btn-bumblebee">Login</button>
-    </form>
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    <div class="login-links">
-        <p>Forgot your password? <a asp-action="ForgotPassword">Reset it here</a></p>
-    </div>
+        .control-label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
 
-    <!-- Display error message if login fails -->
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger mt-3">
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        .form-control {
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            padding: 12px;
+            transition: border-color 0.3s ease;
+            height: auto;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .btn-submit {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+        }
+
+        .login-links a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-links a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .alert-danger {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-color: rgba(231, 76, 60, 0.2);
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .alert-danger p {
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-danger p:last-child {
+            margin-bottom: 0;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="container-custom">
+            <h2>Welcome Back 🐝</h2>
+            
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email address" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" placeholder="Enter your password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-submit">Login</button>
+            </form>
+
+            <div class="login-links">
+                <p>Forgot your password? <a asp-action="ForgotPassword">Reset it here</a></p>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
             {
-                <p>@error.ErrorMessage</p>
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
             }
         </div>
-    }
-</div>
+    </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @section Scripts {
+        @await Html.PartialAsync("_ValidationScriptsPartial")
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     }
-}
+</body>
+</html>

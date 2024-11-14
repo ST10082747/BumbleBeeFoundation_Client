@@ -26,6 +26,8 @@ builder.Services.AddHttpClient("ApiHttpClient", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// Register CurrencyConverterService with HttpClient
+builder.Services.AddHttpClient<ICurrencyConverterService, CurrencyConverterService>();
 
 // Bind SmtpSettings from appsettings.json
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));

@@ -1,79 +1,275 @@
 ﻿@model FundingRequestViewModel
 
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
-<style>
-   
-    .funding-request-form {
-        background-color: #fffbea;
-        border: 2px solid #388e3c; 
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0px 4px 8px rgba(255, 223, 0, 0.2); 
-        max-width: 500px;
-        margin: 0 auto;
-    }
+@{
+    ViewData["Title"] = "Request Funding";
+}
 
-    h2 {
-        text-align: center;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 10px;
-        color: #388e3c;
-    }
-
-    .form-control {
-        border-radius: 5px;
-        transition: border-color 0.3s;
-    }
-
-        .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        html {
+            height: 100%;
         }
 
-    .btn-primary {
-        width: 100%;
-        margin-top: 20px;
-    }
+         body {
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/images/glass.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .form-text {
-        font-size: 0.9em;
-        color: #666;
-    }
-</style>
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
-<h2 class="my-4">Request Funding</h2>
-<div class="funding-request-form">
-<form asp-action="RequestFunding" method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
-    <div class="form-group mb-3">
-        <label asp-for="CompanyName" class="form-label">Company Name</label>
-        <input asp-for="CompanyName" class="form-control" placeholder="Enter your company name" />
-        <span asp-validation-for="CompanyName" class="text-danger"></span>
+        .container-custom {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 800px;
+            color: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+            padding: 12px 16px; 
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+            outline: none;
+        }
+
+        .form-control {
+            line-height: 1.5; 
+        }
+
+        select.form-control {
+            height: auto; 
+        }
+
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .form-text {
+            color: #718096;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border: none;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #718096;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4a5568;
+        }
+
+        .form-control-file {
+            padding: 10px;
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .form-control-file:hover {
+            border-color: #3498db;
+            background-color: #ebf8ff;
+        }
+
+        .currency-section {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .currency-section .form-group {
+            margin-bottom: 10px;
+            margin-top: 5px;
+        }
+
+        #convertButton {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        @@media (max-width: 768px) {
+            .container-custom {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="container-custom">
+            <h1>Request Funding 💰</h1>
+
+            <form asp-action="RequestFunding" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="CompanyName" class="form-label">Company Name</label>
+                    <input asp-for="CompanyName" class="form-control" placeholder="Enter your company name" />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ProjectDescription" class="form-label">Project Description</label>
+                    <textarea asp-for="ProjectDescription" class="form-control" placeholder="Describe your project in detail"></textarea>
+                    <span asp-validation-for="ProjectDescription" class="text-danger"></span>
+                </div>
+
+                <div class="currency-section">
+                    <div class="form-group">
+                        <label for="currencyCode" class="form-label">Select Currency</label>
+                        <select id="currencyCode" class="form-control">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="ZAR">ZAR</option>
+                            <option value="CAD">CAD</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Foreign Currency Amount</label>
+                        <input type="text" id="currencyAmount" class="form-control" placeholder="Enter amount" />
+                    </div>
+
+                    <button type="button" id="convertButton" class="btn btn-secondary">Convert to Rands</button>
+
+                    <div class="form-group mb-0">
+                        <label class="form-label">Requested Amount in Rands</label>
+                        <input asp-for="RequestedAmount" id="RequestedAmount" class="form-control" readonly />
+                        <span asp-validation-for="RequestedAmount" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ProjectImpact" class="form-label">Project Impact</label>
+                    <textarea asp-for="ProjectImpact" class="form-control" placeholder="Describe how this project will make a difference"></textarea>
+                    <span asp-validation-for="ProjectImpact" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="attachments" class="form-label">Required Documents</label>
+                    <input type="file" name="attachments" id="attachments" multiple class="form-control-file" />
+                    <small class="form-text text-muted">Please upload: Project planning documents, licenses, quotations, registration documents, and proof of bank account.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit Funding Request</button>
+            </form>
+        </div>
     </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="ProjectDescription" class="form-label">Project Description</label>
-        <textarea asp-for="ProjectDescription" class="form-control" placeholder="Describe the project"></textarea>
-        <span asp-validation-for="ProjectDescription" class="text-danger"></span>
-    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function convertCurrency() {
+                const amount = $("#currencyAmount").val();
+                const currencyCode = $("#currencyCode").val();
 
-    <div class="form-group mb-3">
-        <label asp-for="RequestedAmount" class="form-label">Requested Amount (R)</label>
-        <input asp-for="RequestedAmount" class="form-control" placeholder="Enter the amount in Rands" />
-        <span asp-validation-for="RequestedAmount" class="text-danger"></span>
-    </div>
+                if (amount && currencyCode) {
+                    $.ajax({
+                        url: "/Company/ConvertCurrency",
+                        type: "GET",
+                        data: { amount: parseFloat(amount), currencyCode: currencyCode },
+                        success: function (data) {
+                            if (data.success) {
+                                $("#RequestedAmount").val(data.convertedAmount.toFixed(2));
+                            } else {
+                                $("#RequestedAmount").val("Conversion failed");
+                            }
+                        },
+                        error: function () {
+                            $("#RequestedAmount").val("Error occurred");
+                        }
+                    });
+                } else {
+                    $("#RequestedAmount").val("Please enter an amount and select a currency.");
+                }
+            }
 
-    <div class="form-group mb-3">
-        <label asp-for="ProjectImpact" class="form-label">Project Impact</label>
-        <textarea asp-for="ProjectImpact" class="form-control" placeholder="Explain the expected impact of the project"></textarea>
-        <span asp-validation-for="ProjectImpact" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="attachments" class="form-label">Attachments</label>
-        <input type="file" name="attachments" id="attachments" multiple class="form-control-file" />
-        <small class="form-text text-muted">Please upload proof of project planning, licenses, quotations, registration, and proof of a bank account.</small>
-    </div>
-
-    <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
-</form>
-</div>
+            $("#convertButton").on("click", convertCurrency);
+        });
+    </script>
+</body>
+</html>

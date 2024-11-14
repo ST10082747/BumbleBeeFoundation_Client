@@ -4,6 +4,7 @@ using BumbleBeeFoundation_Client.Models;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using BumbleBeeFoundation_Client.Services;
 
 namespace BumbleBeeFoundation_Client.Controllers
 {
@@ -13,11 +14,14 @@ namespace BumbleBeeFoundation_Client.Controllers
         private readonly ILogger<CompanyController> _logger;
         private readonly IConfiguration _configuration;
 
-        public CompanyController(IHttpClientFactory httpClientFactory, ILogger<CompanyController> logger, IConfiguration configuration)
+        private readonly ICurrencyConverterService _currencyConverterService;
+
+        public CompanyController(IHttpClientFactory httpClientFactory, ILogger<CompanyController> logger, IConfiguration configuration, ICurrencyConverterService currencyConverterService)
         {
             _httpClient = httpClientFactory.CreateClient("ApiHttpClient");  
             _logger = logger;
             _configuration = configuration;
+            _currencyConverterService = currencyConverterService;
         }
 
         public async Task<IActionResult> Index()
@@ -60,6 +64,24 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ConvertCurrency(decimal amount, string currencyCode)
+        {
+            _logger.LogInformation("ConvertCurrency action called with amount: {Amount} and currencyCode: {CurrencyCode}", amount, currencyCode);
+
+            try
+            {
+                var convertedAmount = await _currencyConverterService.ConvertToRand(amount, currencyCode);
+                _logger.LogInformation("Currency converted successfully. Amount in ZAR: {ConvertedAmount}", convertedAmount);
+
+                return Json(new { success = true, convertedAmount });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while converting currency for amount: {Amount} and currencyCode: {CurrencyCode}", amount, currencyCode);
+                return Json(new { success = false, message = "Error occurred while converting currency." });
+            }
+        }
 
         public IActionResult RequestFunding()
         {
