@@ -24,13 +24,13 @@ namespace BumbleBeeFoundation_Client.Controllers
             _certificateService = certificateService;
         }
 
-        // Dashboard Action - Fetches statistics from the API
+        // Dashboard Action - Fetches statistics from the API for the admin
         public async Task<IActionResult> Dashboard()
         {
             try
             {
                 var response = await _httpClient.GetAsync("api/admin/dashboard");
-                response.EnsureSuccessStatusCode(); // Throws an exception if the status code is not successful
+                response.EnsureSuccessStatusCode(); 
 
                 var json = await response.Content.ReadAsStringAsync();
                 var dashboardViewModel = JsonConvert.DeserializeObject<DashboardViewModel>(json);
@@ -44,7 +44,9 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-        // User Management - Fetches users from the API
+        // User Management actions
+
+        // User Management - Fetches users from the API for the admin
         public async Task<IActionResult> UserManagement()
         {
             try
@@ -64,13 +66,12 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-        // Create User - Displays the user creation form
         public IActionResult CreateUser()
         {
             return View();
         }
 
-        // POST: Create User - Sends data to the API to create a user
+        // POST: Create User - Let an admin send data to the API to create a user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(User user)
@@ -93,7 +94,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(user);
         }
 
-        // Edit User - Fetches the user to edit from the API
+        // Edit User - Fetches the user details to edit, from the API
         public async Task<IActionResult> EditUser(int id)
         {
             try
@@ -104,7 +105,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 var json = await response.Content.ReadAsStringAsync();
                 var user = JsonConvert.DeserializeObject<User>(json);
 
-                // Map User to UserForEdit
+               
                 var userForEdit = new UserForEdit
                 {
                     UserID = user.UserID,
@@ -124,7 +125,7 @@ namespace BumbleBeeFoundation_Client.Controllers
         }
 
 
-        // POST: Edit User - Sends the updated user data to the API
+        // POST: Edit User - Allow admin to send the updated user data to the API
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(int id, UserForEdit userForEdit)
@@ -152,7 +153,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(userForEdit);
         }
 
-        // Delete User - Fetches the user to confirm deletion
+        // Delete User - Allow admin to delete the user
         public async Task<IActionResult> DeleteUser(int id)
         {
             try
@@ -172,7 +173,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-        // POST: Delete User - Sends a delete request to the API
+        // POST: Delete User - Send delete request to the API
         [HttpPost, ActionName("DeleteUser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUserConfirmed(int id)
@@ -192,7 +193,10 @@ namespace BumbleBeeFoundation_Client.Controllers
         }
 
 
-        // company management
+        // Company Management actions
+
+        // Fetch list of all companies in the database, using the API
+
         // GET: /Admin/CompanyManagement
         public async Task<IActionResult> CompanyManagement()
         {
@@ -218,6 +222,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return View(companies);
         }
+
+        // Get details for a specific company
 
         // GET: /Admin/CompanyDetails/{id}
         public async Task<IActionResult> CompanyDetails(int id)
@@ -246,6 +252,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(company);
         }
 
+        // Allow the admin to approve a company
+
         // POST: /Admin/ApproveCompany/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -266,6 +274,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return RedirectToAction(nameof(CompanyManagement));
         }
+
+        // Allow the admin to reject a company
 
         // POST: /Admin/RejectCompany/{id}
         [HttpPost]
@@ -293,7 +303,9 @@ namespace BumbleBeeFoundation_Client.Controllers
 
 
 
-        // donations
+        // Donation Management actions
+
+        // Use the API to fetch list of donations in the database
         public async Task<IActionResult> DonationManagement()
         {
             try
@@ -321,12 +333,14 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow the admin to approve a donation
+
         [HttpPost]
         public async Task<IActionResult> ApproveDonation(int id)
         {
             try
             {
-                // First, approve the donation through the API
+                // Approve the donation through the API
                 var response = await _httpClient.PutAsync($"api/admin/donations/{id}/approve", null);
 
                 if (!response.IsSuccessStatusCode)
@@ -347,7 +361,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                         // Generate certificate
                         var certificatePdf = _certificateService.GenerateDonationCertificate(donation);
 
-                        // Send email with certificate
+                        // Send email with section 18 certificate
                         await _emailService.SendDonationCertificateAsync(
                             donation.DonorEmail,
                             donation.DonorName,
@@ -371,6 +385,8 @@ namespace BumbleBeeFoundation_Client.Controllers
                 return RedirectToAction(nameof(DonationManagement));
             }
         }
+
+        // Get the details for a specific donation
 
         public async Task<IActionResult> DonationDetails(int id)
         {
@@ -402,6 +418,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow an admin to download a user's document
         [HttpGet]
         public async Task<IActionResult> DownloadFile(int id)
         {
@@ -456,7 +473,10 @@ namespace BumbleBeeFoundation_Client.Controllers
         }
 
 
-        // Funding management
+        // Funding Management actions
+
+        // Fetch all funding requests
+
         // GET: Admin/FundingRequestManagement
         public async Task<IActionResult> FundingRequestManagement()
         {
@@ -473,10 +493,11 @@ namespace BumbleBeeFoundation_Client.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching funding requests: {ex.Message}");
-                return View("Error"); // Optionally, direct to an error view
+                return View("Error"); 
             }
         }
 
+        // Allow an admin to view attachments
         public async Task<IActionResult> ViewAttachments(int requestId)
         {
             try
@@ -496,6 +517,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow an admin to download an attachment
         public async Task<IActionResult> DownloadAttachment(int attachmentId)
         {
             try
@@ -519,6 +541,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Get details for a specific funding request 
 
         // GET: Admin/FundingRequestDetails/{id}
         public async Task<IActionResult> FundingRequestDetails(int id)
@@ -544,6 +567,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow the admin to approve a funding request
+
         // POST: Admin/ApproveFundingRequest
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -566,6 +591,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow the admin to reject a funding request
+
         // POST: Admin/RejectFundingRequest
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -585,9 +612,10 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Document Management actions
 
+        // Get all documents in the database
 
-        // Documents 
         // GET: Admin/Documents
         public async Task<IActionResult> Documents()
         {
@@ -607,6 +635,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(documents);
         }
 
+        // Allow an admin to verify a document
+
         // POST: Admin/ApproveDocument
         [HttpPost]
         public async Task<IActionResult> ApproveDocument(int documentId)
@@ -622,6 +652,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             return RedirectToAction("Documents");
         }
 
+        // Allow an admin to reject a document
+        
         // POST: Admin/RejectDocument
         [HttpPost]
         public async Task<IActionResult> RejectDocument(int documentId)
@@ -636,6 +668,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return RedirectToAction("Documents");
         }
+
+        // Allow an admin to mark a document as "received"
 
         // POST: Admin/DocumentsReceived
         [HttpPost]
@@ -652,6 +686,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             return RedirectToAction("Documents");
         }
 
+        // Allow an admin to close a funding request
+
         // POST: Admin/CloseRequest
         [HttpPost]
         public async Task<IActionResult> CloseRequest(int documentId)
@@ -666,6 +702,8 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             return RedirectToAction("Documents");
         }
+
+        // Allow an admin to download a document
 
         // GET: Admin/DownloadDocument
         public async Task<IActionResult> DownloadDocument(int documentId)
@@ -691,7 +729,9 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-        // Reports
+        // Report Creation actions
+
+        // Get details to create a report about all the donations
         // GET: Admin/DonationReport
         public async Task<ActionResult> DonationReport()
         {
@@ -707,7 +747,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 else
                 {
                     _logger.LogError("Failed to fetch donation report. Status code: {StatusCode}", response.StatusCode);
-                    // Handle error (return a view with a message, etc.)
+                    
                     return View("Error");
                 }
             }
@@ -718,6 +758,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Get all the details to create a report about project funding requests
         // GET: Admin/FundingRequestReport
         public async Task<ActionResult> FundingRequestReport()
         {
@@ -733,7 +774,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 else
                 {
                     _logger.LogError("Failed to fetch funding request report. Status code: {StatusCode}", response.StatusCode);
-                    // Handle error (return a view with a message, etc.)
+                    
                     return View("Error");
                 }
             }

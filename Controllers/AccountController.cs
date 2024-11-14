@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using BumbleBeeFoundation_Client.Services;
 
 namespace BumbleBeeFoundation_Client.Controllers
 {
@@ -12,14 +13,16 @@ namespace BumbleBeeFoundation_Client.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AccountController> _logger;
+        private readonly IEmailService _emailService;
 
-        public AccountController(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<AccountController> logger)
+        public AccountController(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<AccountController> logger, IEmailService emailService)
         {
-            // Use the named client if you registered it as "ApiHttpClient"
-            _httpClient = httpClientFactory.CreateClient("ApiHttpClient"); // If you registered it with a name in Program.cs
+            
+            _httpClient = httpClientFactory.CreateClient("ApiHttpClient"); 
 
             _configuration = configuration;
             _logger = logger;
+            _emailService = emailService;
         }
 
 
@@ -28,6 +31,8 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             return View();
         }
+
+        // Check the user credentials, and then redirect them to the specific dashboard after authentication
 
         // POST: /Account/Login
         [HttpPost]
@@ -108,6 +113,8 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View();
         }
 
+        // Allow a user to register
+
         // POST: /Account/Register
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -152,13 +159,13 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(model);
         }
 
-
-
         // GET: /Account/ForgotPassword
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
+        // Allow a user to reset their passowrd
 
         // POST: /Account/ForgotPassword
         [HttpPost]
@@ -173,12 +180,25 @@ namespace BumbleBeeFoundation_Client.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
+                    // Send the password reset notification email
+                    await _emailService.SendPasswordResetNotificationAsync(model.Email, model.Email);
+
                     return RedirectToAction("ResetPassword", new { email = model.Email });
                 }
                 else
                 {
                     var errorResponse = await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError("", "Forgot Password failed: " + errorResponse);
+
+                    // Check if the error message is due to non-existing email 
+                    if (errorResponse.Contains("Email does not exist"))
+                    {
+                        ModelState.AddModelError("", "The email address you entered does not exist.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Forgot Password failed: " + errorResponse);
+                    }
+
                     _logger.LogError($"ForgotPassword API call failed: {errorResponse}");
                 }
             }
@@ -191,11 +211,14 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(model);
         }
 
+
         // GET: /Account/ResetPassword
         public IActionResult ResetPassword(string email)
         {
             return View(new ResetPasswordViewModel { Email = email });
         }
+
+        // Allow the user to enter a new password
 
         // POST: /Account/ResetPassword
         [HttpPost]
@@ -215,7 +238,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(model);
         }
 
-
+        // Log the user out
         public IActionResult Logout()
         {
             // Clear the session

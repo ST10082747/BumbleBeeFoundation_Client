@@ -24,12 +24,13 @@ namespace BumbleBeeFoundation_Client.Controllers
             _currencyConverterService = currencyConverterService;
         }
 
+        // Fetch dashboard view data for companies
         public async Task<IActionResult> Index()
         {
             var companyId = HttpContext.Session.GetInt32("CompanyID");
             var userId = HttpContext.Session.GetString("UserId");
 
-            // Ensure both CompanyID and UserId are available in session
+            // Check if both CompanyID and UserId are available in session
             if (companyId == null || string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("Session data missing, redirecting to login.");
@@ -64,6 +65,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Allow users to perform currency conversions
         [HttpGet]
         public async Task<IActionResult> ConvertCurrency(decimal amount, string currencyCode)
         {
@@ -87,6 +89,8 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             return View();
         }
+
+        // Process a company's request for funding
 
         [HttpPost]
         public async Task<IActionResult> RequestFunding(FundingRequestViewModel model, List<IFormFile> attachments)
@@ -171,8 +175,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-
-
+        // Once a donation has been saved to the database, provide the user with confirmation
         public async Task<IActionResult> FundingRequestConfirmation(int id)
         {
             var response = await _httpClient.GetAsync($"api/Company/FundingRequestConfirmation/{id}");
@@ -194,6 +197,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(fundingRequest);
         }
 
+        // Fetch the funding history for the company
         public async Task<IActionResult> FundingRequestHistory()
         {
             var companyId = HttpContext.Session.GetInt32("CompanyID");
@@ -220,6 +224,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(requests);
         }
 
+        // Allow company employee to download files
         public async Task<IActionResult> DownloadAttachment(int id)
         {
             try
@@ -270,8 +275,8 @@ namespace BumbleBeeFoundation_Client.Controllers
                 }
 
                 // Clean the filename
-                fileName = System.IO.Path.GetFileName(fileName);  // Remove any path components
-                fileName = Uri.UnescapeDataString(fileName);     // Decode URL encoding
+                fileName = System.IO.Path.GetFileName(fileName);  
+                fileName = Uri.UnescapeDataString(fileName);    
 
                 var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
 
@@ -287,6 +292,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Helper method to check files in database
         private string GetFileExtensionFromContentType(string contentType)
         {
             return contentType?.ToLower() switch
@@ -301,6 +307,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             };
         }
 
+        // Let a company upload documents
 
         [HttpPost]
         [ValidateAntiForgeryToken]

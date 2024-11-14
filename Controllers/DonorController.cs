@@ -34,6 +34,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             _httpClient = httpClientFactory.CreateClient("ApiHttpClient");
         }
 
+        // Get data for the donor dashboard
         public async Task<IActionResult> Index()
         {
             try
@@ -64,6 +65,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(model);
         }
 
+        // Process the donation made by the user
         [HttpPost]
         public async Task<IActionResult> Donate(DonationViewModel model, IFormFile? documentUpload)
         {
@@ -110,6 +112,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Save the donation information to the database
         private async Task<int> SaveDonationToApi(DonationViewModel model, IFormFile? documentUpload)
         {
             var content = new MultipartFormDataContent();
@@ -146,6 +149,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return 0;
         }
 
+        // Generate the PayFast gateway form after donation data is verified
         private string GeneratePayFastForm(DonationViewModel model, int donationId)
         {
             var payFastRequest = new PayFastRequest
@@ -184,12 +188,13 @@ namespace BumbleBeeFoundation_Client.Controllers
             return form.ToString();
         }
 
+        // Check if the user ID number is the correct length
         private bool IsValidIDNumber(string idNumber)
         {
             return idNumber.Length == 13 && idNumber.All(char.IsDigit);
         }
 
-
+        // Confirm the donation to the user
         public async Task<IActionResult> DonationConfirmation(int id)
         {
             var response = await _httpClient.GetAsync($"api/Donor/Donation/{id}");
@@ -203,6 +208,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return NotFound();
         }
 
+        // Allow a user to view their history of donations
         public async Task<IActionResult> DonationHistory()
         {
             string userEmail = HttpContext.Session.GetString("UserEmail");
@@ -223,6 +229,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(new List<DonationViewModel>());
         }
 
+        // Allow the user to download their history as a PDF
         public async Task<IActionResult> DownloadDonationHistory()
         {
             string userEmail = HttpContext.Session.GetString("UserEmail");
@@ -362,6 +369,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
+        // Fetch a list of companies which have applied for funding
         public async Task<IActionResult> FundingRequests()
         {
             var response = await _httpClient.GetAsync("api/Donor/FundingRequests");
@@ -375,6 +383,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             return View(new List<FundingRequestViewModel>());
         }
 
+        // Let the user search for companies
         [HttpGet]
         public async Task<IActionResult> SearchFundingRequests(string term)
         {

@@ -7,5 +7,7 @@ namespace BumbleBeeFoundation_Client.Services
         Task SendDonationNotificationAsync(DonationViewModel donation);
 
         Task SendDonationCertificateAsync(string recipientEmail, string recipientName, byte[] certificatePdf);
+
+        Task SendPasswordResetNotificationAsync(string recipientEmail, string recipientName);
     }
 }

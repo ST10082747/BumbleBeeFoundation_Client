@@ -87,6 +87,39 @@
             }
         }
 
+        // If a password reset request is made, send out an email
+        public async Task SendPasswordResetNotificationAsync(string recipientEmail, string recipientName)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_smtpSettings.FromName, _smtpSettings.FromEmail));
+            message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+            message.Subject = "Password Reset Attempt";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"Dear {recipientName},\n\n" +
+                           "We received a request to reset your password. " +
+                           "If this was you, please follow the instructions on the Reset Password page. " +
+                           "If you did not request this password reset, please notify us so we can take steps to prevent unauthorized access to your account.\n\n" +
+                           "If you have any questions, feel free to contact support.\n\n" +
+                           "Best regards,\nBumbleBee Foundation"
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            try
+            {
+                await client.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_smtpSettings.UserName, _smtpSettings.Password);
+                await client.SendAsync(message);
+            }
+            finally
+            {
+                await client.DisconnectAsync(true);
+            }
+        }
+
     }
 
 }
