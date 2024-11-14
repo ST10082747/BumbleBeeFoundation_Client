@@ -1,6 +1,6 @@
 ﻿namespace BumbleBeeFoundation_Client.Services
 {
-    // Services/EmailService.cs
+    
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using MimeKit;
@@ -45,8 +45,6 @@
             }
             catch (Exception ex)
             {
-                // Log the exception or handle accordingly
-                // Consider using a logging framework like Serilog or NLog
                 throw new InvalidOperationException("Failed to send email.", ex);
             }
             finally
