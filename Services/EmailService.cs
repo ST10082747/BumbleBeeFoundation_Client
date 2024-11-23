@@ -120,6 +120,37 @@
             }
         }
 
+        public async Task SendAccountDeletionNotificationAsync(string recipientEmail, string recipientName)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_smtpSettings.FromName, _smtpSettings.FromEmail));
+            message.To.Add(new MailboxAddress(recipientName, recipientEmail));
+            message.Subject = "Account Deactivation Notification";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"Dear {recipientName},\n\n" +
+                           "We want to inform you that your user profile with BumbleBee Foundation has been deactivated by an administrator. " +
+                           "Your profile and user details are no longer valid for logging in.\n\n" +
+                           "If you need futher details about why your access was revoked, please contact support.\n\n" +
+                           "Best regards,\nBumbleBee Foundation"
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            try
+            {
+                await client.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_smtpSettings.UserName, _smtpSettings.Password);
+                await client.SendAsync(message);
+            }
+            finally
+            {
+                await client.DisconnectAsync(true);
+            }
+        }
+
     }
 
 }

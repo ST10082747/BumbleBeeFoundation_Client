@@ -180,8 +180,19 @@ namespace BumbleBeeFoundation_Client.Controllers
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"api/admin/users/{id}");
+                // Fetch the user before deletion to get their email and name
+                var response = await _httpClient.GetAsync($"api/admin/users/{id}");
                 response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<User>(json);
+
+                // Delete the user
+                var deleteResponse = await _httpClient.DeleteAsync($"api/admin/users/{id}");
+                deleteResponse.EnsureSuccessStatusCode();
+
+                // Send account deletion notification
+                await _emailService.SendAccountDeletionNotificationAsync(user.Email, $"{user.FirstName} {user.LastName}");
 
                 return RedirectToAction(nameof(UserManagement));
             }
