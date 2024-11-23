@@ -1,10 +1,96 @@
 ﻿@model IEnumerable<DonationViewModel>
 @{
     ViewData["Title"] = "Donation History";
+    var groupedDonations = Model.GroupBy(d => d.DonationDate.Date)
+                               .OrderByDescending(g => g.Key);
 }
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
+<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    .date-section {
+        margin-bottom: 2rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 2px solid #2c3e50;
+    }
+
+    .date-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 3px solid #2c3e50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .date-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+    .daily-total {
+        background-color: #e9ecef;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+        .table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border: 1.5px solid #34495e;
+        }
+
+    .download-section {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .donation-type-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .donation-type-money {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .donation-type-goods {
+        background-color: #f3e5f5;
+        color: #7b1fa2;
+    }
+
+    .donation-count {
+        font-size: 0.9rem;
+        color: #666;
+        margin-left: 10px;
+    }
+</style>
 
 <div class="container mt-4">
     @if (ViewBag.Message != null)
@@ -14,37 +100,59 @@
         </div>
     }
 
-    <div class="text-center mb-4">
-        <h1 class="donation-history-title">@ViewData["Title"]</h1>
+    <div class="download-section">
+        <h1 class="donation-history-title mb-3">@ViewData["Title"]</h1>
         <a href="@Url.Action("DownloadDonationHistory", "Donor")"
-           class="btn btn-primary mt-2">
+           class="btn btn-primary">
             <i class="bi bi-download"></i> Download PDF Report
         </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Donation ID</th>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Donor Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.DonationId</td>
-                        <td>@item.DonationDate.ToString("yyyy-MM-dd")</td>
-                        <td>@item.DonationType</td>
-                        <td>@item.DonationAmount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))</td> <!-- Ensure ZAR formatting -->
-                        <td>@item.DonorName</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    @foreach (var dateGroup in groupedDonations)
+    {
+        var dailyTotal = dateGroup.Sum(d => d.DonationAmount);
+        var donationCount = dateGroup.Count();
+
+        <div class="date-section">
+            <div class="date-header">
+                <div>
+                    <h3>
+                        @dateGroup.Key.ToString("dddd, MMMM d, yyyy")
+                        <span class="donation-count">(@donationCount donation@(donationCount != 1 ? "s" : ""))</span>
+                    </h3>
+                </div>
+                <span class="daily-total">
+                    Daily Total: @dailyTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Donation ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Donor Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var donation in dateGroup.OrderByDescending(d => d.DonationAmount))
+                        {
+                            <tr>
+                                <td>@donation.DonationId</td>
+                                <td>
+                                    <span class="donation-type-badge @(donation.DonationType.ToLower() == "money" ? "donation-type-money" : "donation-type-goods")">
+                                        @donation.DonationType
+                                    </span>
+                                </td>
+                                <td>@donation.DonationAmount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))</td>
+                                <td>@donation.DonorName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>

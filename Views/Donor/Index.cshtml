@@ -1,52 +1,237 @@
 ﻿@model List<FundingRequestViewModel>
-
 @{
     ViewData["Title"] = "Donor Dashboard";
+    var finishedProjects = Model.Where(r => r.Status == "Closed").ToList();
+    var ongoingProjects = Model.Where(r => r.Status == "Approved").ToList();
 }
+
 <link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-<h1 class="text-center donor-dashboard-title">@ViewData["Title"]</h1>
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Quick Actions</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-group">
-                    <li class="list-group-item"><a asp-action="Donate" class="btn btn-primary btn-block">Make a Donation</a></li>
-                    <li class="list-group-item"><a asp-action="DonationHistory" class="btn btn-info btn-block">View Donation History</a></li>
-                    <li class="list-group-item"><a asp-action="FundingRequests" class="btn btn-secondary btn-block">View Companies</a></li>
-                </ul>
+    .card {
+        border: 2px solid #2c3e50;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #2c3e50;
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .quick-actions .btn {
+        margin-bottom: 10px;
+        padding: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .quick-actions .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .project-card {
+        border: 1.5px solid #34495e;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        padding: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .project-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .project-company {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .project-amount {
+        font-weight: 600;
+        color: #2c3e50;
+        background-color: #e9ecef;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .project-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .project-description {
+        color: #444;
+        margin: 10px 0;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .status-closed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-approved {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .project-count {
+        background-color: #e9ecef;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+</style>
+
+<div class="dashboard-container">
+    <h1 class="text-center donor-dashboard-title mb-4">@ViewData["Title"]</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="bi bi-lightning-charge"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body quick-actions">
+                    <a asp-action="Donate" class="btn btn-primary btn-block">
+                        <i class="bi bi-heart"></i> Make a Donation
+                    </a>
+                    <a asp-action="DonationHistory" class="btn btn-info btn-block">
+                        <i class="bi bi-clock-history"></i> View Donation History
+                    </a>
+                    <a asp-action="FundingRequests" class="btn btn-secondary btn-block">
+                        <i class="bi bi-building"></i> View Companies
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-8">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Recent Funding Activity and Success Stories</h5>
-            </div>
-            <div class="card-body">
-                @if (Model.Any())
-                {
-                    <div class="list-group">
-                        @foreach (var request in Model)
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="bi bi-graph-up"></i> Projects and Success Stories
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (finishedProjects.Any() || ongoingProjects.Any())
+                    {
+                        if (finishedProjects.Any())
                         {
-                            <div class="list-group-item">
-                                <h6 class="mb-1"><strong>Company:</strong> @request.CompanyName</h6>
-                                <p class="mb-1"><strong>Project Description:</strong> @request.ProjectDescription</p>
-                                <p class="mb-1"><strong>Amount:</strong> R @request.RequestedAmount.ToString("N2")</p>
-                                <p class="mb-1"><strong>Status:</strong> @request.Status</p>
-                                <p class="mb-1"><strong>Submitted:</strong> @((request.SubmittedAt == DateTime.MinValue) ? "N/A" : request.SubmittedAt.ToString("MMMM dd, yyyy"))</p>
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="bi bi-check-circle"></i> Completed Projects
+                                </h3>
+                                <span class="project-count">@finishedProjects.Count projects</span>
                             </div>
+
+                            @foreach (var project in finishedProjects.OrderByDescending(p => p.SubmittedAt))
+                            {
+                                <div class="project-card">
+                                    <div class="project-header">
+                                        <span class="project-company">@project.CompanyName</span>
+                                        <span class="project-amount">R @project.RequestedAmount.ToString("N2")</span>
+                                    </div>
+                                    <p class="project-description">@project.ProjectDescription</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="status-badge status-closed">
+                                            <i class="bi bi-check-circle"></i> Completed
+                                        </span>
+                                        <span class="project-date">
+                                            Completed: @project.SubmittedAt.ToString("MMMM dd, yyyy")
+                                        </span>
+                                    </div>
+                                </div>
+                            }
                         }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">No recent donations found.</p>
-                }
+
+                        if (ongoingProjects.Any())
+                        {
+                            <div class="section-header @(finishedProjects.Any() ? "mt-4" : "")">
+                                <h3 class="section-title">
+                                    <i class="bi bi-arrow-right-circle"></i> Ongoing Projects
+                                </h3>
+                                <span class="project-count">@ongoingProjects.Count projects</span>
+                            </div>
+
+                            @foreach (var project in ongoingProjects.OrderByDescending(p => p.SubmittedAt))
+                            {
+                                <div class="project-card">
+                                    <div class="project-header">
+                                        <span class="project-company">@project.CompanyName</span>
+                                        <span class="project-amount">R @project.RequestedAmount.ToString("N2")</span>
+                                    </div>
+                                    <p class="project-description">@project.ProjectDescription</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="status-badge status-approved">
+                                            <i class="bi bi-arrow-right-circle"></i> In Progress
+                                        </span>
+                                        <span class="project-date">
+                                            Started: @project.SubmittedAt.ToString("MMMM dd, yyyy")
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">
+                            <i class="bi bi-info-circle"></i> No projects found at the moment.
+                        </p>
+                    }
+                </div>
             </div>
         </div>
     </div>
