@@ -11,5 +11,7 @@ namespace BumbleBeeFoundation_Client.Services
         Task SendPasswordResetNotificationAsync(string recipientEmail, string recipientName);
 
         Task SendAccountDeletionNotificationAsync(string recipientEmail, string recipientName);
+
+        Task SendDocumentUploadNotificationAsync(int requestId, int companyId, string documentName);
     }
 }

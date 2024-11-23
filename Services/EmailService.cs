@@ -120,6 +120,7 @@
             }
         }
 
+        // When the admin deactivates a user account, send the user a notification
         public async Task SendAccountDeletionNotificationAsync(string recipientEmail, string recipientName)
         {
             var message = new MimeMessage();
@@ -150,6 +151,43 @@
                 await client.DisconnectAsync(true);
             }
         }
+
+        // When a company uploads supporting documents, alert the admin
+        public async Task SendDocumentUploadNotificationAsync(int requestId, int companyId, string documentName)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_smtpSettings.FromName, _smtpSettings.FromEmail));
+            message.To.Add(new MailboxAddress("Admin", _smtpSettings.AdminEmail));
+            message.Subject = "New Document Uploaded";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"A company has uploaded new supporting documents, regarding their approved project currently in progress.\n\n" +
+                           $"Request ID: {requestId}\n" +
+                           $"Company ID: {companyId}\n" +
+                           $"Document Name: {documentName}\n\n" +
+                           "Log in to the Admin Portal to review the document."
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+            try
+            {
+                await client.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_smtpSettings.UserName, _smtpSettings.Password);
+                await client.SendAsync(message);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to send email.", ex);
+            }
+            finally
+            {
+                await client.DisconnectAsync(true);
+            }
+        }
+
 
     }
 

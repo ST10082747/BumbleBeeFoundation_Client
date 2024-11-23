@@ -13,15 +13,17 @@ namespace BumbleBeeFoundation_Client.Controllers
         private readonly HttpClient _httpClient;
         private readonly ILogger<CompanyController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         private readonly ICurrencyConverterService _currencyConverterService;
 
-        public CompanyController(IHttpClientFactory httpClientFactory, ILogger<CompanyController> logger, IConfiguration configuration, ICurrencyConverterService currencyConverterService)
+        public CompanyController(IHttpClientFactory httpClientFactory, ILogger<CompanyController> logger, IConfiguration configuration, ICurrencyConverterService currencyConverterService, IEmailService emailService)
         {
             _httpClient = httpClientFactory.CreateClient("ApiHttpClient");  
             _logger = logger;
             _configuration = configuration;
             _currencyConverterService = currencyConverterService;
+            _emailService = emailService;
         }
 
         // Fetch dashboard view data for companies
@@ -327,7 +329,7 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(requestId.ToString()), "requestId");
-            content.Add(new StringContent(companyId.ToString()), "companyId"); 
+            content.Add(new StringContent(companyId.ToString()), "companyId");
 
             var fileContent = new StreamContent(document.OpenReadStream())
             {
@@ -339,10 +341,15 @@ namespace BumbleBeeFoundation_Client.Controllers
             if (!response.IsSuccessStatusCode)
             {
                 ModelState.AddModelError("", "Failed to upload the document. Please try again.");
+                return RedirectToAction("FundingRequestHistory");
             }
+
+            // Send notification email to the admin after a successful upload
+            await _emailService.SendDocumentUploadNotificationAsync(requestId, companyId.Value, document.FileName);
 
             return RedirectToAction("FundingRequestHistory");
         }
+
 
 
     }
