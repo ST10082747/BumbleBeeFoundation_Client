@@ -4,71 +4,190 @@
 }
 
 <link href="~/css/bumblebee-theme.css" rel="stylesheet" />
-
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
+<style>
+    .table {
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid #2c3e50;
+    }
 
+        .table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 3px solid #2c3e50; 
+        }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+        .table td, .table th {
+            padding: 15px;
+            vertical-align: middle;
+            border: 1.5px solid #34495e; 
+        }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+    .upload-section {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1.5px solid #34495e; 
+    }
 
-<h1 class="text-center request-funding-title">@ViewData["Title"]</h1>
+    .upload-info {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
 
-<div class="table-responsive">
-    <table class="table table-striped table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Request ID</th>
-                <th>Project</th>
-                <th>Submitted At</th>
-                <th>Requested Amount (R)</th>
-                <th>Status</th>
-                <th>Admin Message</th>
-                <th>Project Completed? Upload Documents For Review</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    .file-input-wrapper {
+        margin-bottom: 10px;
+    }
+
+    .custom-file-input:focus ~ .custom-file-label {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    .alert {
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .request-funding-title {
+        margin: 30px 0;
+        color: #333;
+    }
+
+    .status-cell {
+        font-weight: 600;
+    }
+
+    .status-approved {
+        color: #28a745;
+    }
+
+    .status-pending {
+        color: #ffc107;
+    }
+
+    .status-rejected {
+        color: #dc3545;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .custom-file {
+        border: 1.5px solid #34495e;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="main-container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <h1 class="text-center request-funding-title">@ViewData["Title"]</h1>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@item.RequestID</td>
-                    <td>@item.ProjectDescription</td>
-                    <td>@item.SubmittedAt.ToString("yyyy-MM-dd")</td>
-                    <td>R @item.RequestedAmount.ToString("N2")</td>
-                    <td>@item.Status</td>
-                    <td>@item.AdminMessage</td>
-                    <td>
-                        @if (item.Status == "Approved")
-                        {
-                            <form asp-action="UploadDocument" asp-route-requestId="@item.RequestID" method="post" enctype="multipart/form-data" class="d-inline">
-                                <input type="file" name="document" class="form-control" required />
-                                <button type="submit" class="btn btn-primary mt-2">Upload Document</button>
-                            </form>
-                        }
-                    </td>
+                    <th>Request ID</th>
+                    <th>Project</th>
+                    <th>Submitted At</th>
+                    <th>Requested Amount (R)</th>
+                    <th>Status</th>
+                    <th>Admin Message</th>
+                    <th>Supporting Documents</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.RequestID</td>
+                        <td>@item.ProjectDescription</td>
+                        <td>@item.SubmittedAt.ToString("yyyy-MM-dd")</td>
+                        <td>R @item.RequestedAmount.ToString("N2")</td>
+                        <td class="status-cell @(item.Status.ToLower() switch {
+                            "approved" => "status-approved",
+                            "pending" => "status-pending",
+                            "rejected" => "status-rejected",
+                            _ => ""
+                        })">
+                            @item.Status
+                        </td>
+                        <td>@item.AdminMessage</td>
+                        <td>
+                            @if (item.Status == "Approved")
+                            {
+                                <div class="upload-section">
+                                    <div class="upload-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        Please upload supporting documents to show project completion
+                                        (e.g., receipts, photos, or progress reports)
+                                    </div>
+                                    <form asp-action="UploadDocument" asp-route-requestId="@item.RequestID"
+                                          method="post" enctype="multipart/form-data">
+                                        <div class="file-input-wrapper">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" name="document"
+                                                       id="document-@item.RequestID" required>
+                                                <label class="custom-file-label" for="document-@item.RequestID">
+                                                    Choose file
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-upload"></i> Upload Supporting Documents
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">
+                                    Available after approval by admin
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+    
+    $('.custom-file-input').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+</script>
