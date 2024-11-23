@@ -4,45 +4,50 @@
     ViewData["Title"] = "Deactivate User";
 }
 
-<h1>Revoke User Access</h1>
+<div class="container mt-5">
+   
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
-<h3>Are you sure you want to deactivate this user profile?</h3>
+    <div class="alert alert-warning text-center">
+        <h3>Are you sure you want to deactivate this user profile?</h3>
+    </div>
 
-<div>
-    <h4>User Details</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-    </dl>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">User Details</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">First Name</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.FirstName)</dd>
 
-    <h4>Deactivated users will be sent a notification email, and their access to the platform will be revoked.</h4>
+                <dt class="col-sm-4">Last Name</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.LastName)</dd>
 
-    <form asp-action="DeleteUser">
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                <dt class="col-sm-4">Role</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(model => model.Role)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <p>Deactivated users will be sent a notification email, and their access to the platform will be revoked.</p>
+    </div>
+
+    <form asp-action="DeleteUser" class="text-center">
         <input type="hidden" asp-for="UserID" />
-        <input type="submit" value="Yes, Revoke Access" class="btn btn-danger" /> |
-        <a asp-action="UserManagement">Back to List</a>
+        <button type="submit" class="btn btn-danger btn-lg me-2">
+            <i class="fas fa-user-slash"></i> Yes, Revoke Access
+        </button>
+        <a asp-action="UserManagement" class="btn btn-secondary btn-lg">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
     </form>
 </div>
+
+<!-- Font Awesome CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+

@@ -4,52 +4,66 @@
     ViewData["Title"] = "Create User";
 }
 
-<h1>Create User</h1>
+<div class="container mt-5">
+    
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateUser">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <select asp-for="Role" class="form-control">
-                    <option value="Admin">Admin</option>
-                    <option value="Company">Company</option>
-                    <option value="Donor">Donor</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">User Information</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="CreateUser">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Role" class="form-label"></label>
+                    <select asp-for="Role" class="form-select">
+                        <option value="Admin">Admin</option>
+                        <option value="Company">Company</option>
+                        <option value="Donor">Donor</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-plus"></i> Create
+                    </button>
+                    <a asp-action="UserManagement" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="UserManagement">Back to List</a>
-</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 
 @section Scripts {
     @{

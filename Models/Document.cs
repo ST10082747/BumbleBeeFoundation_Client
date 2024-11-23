@@ -8,10 +8,13 @@
         public DateTime UploadDate { get; set; }
         public string Status { get; set; }
         public string CompanyName { get; set; }
+        public string ProjectDescription { get; set; }
 
         public int CompanyID { get; set; }
 
         public byte[] FileContent { get; set; } 
         public int FundingRequestID { get; set; } 
     }
+
+
 }

@@ -14,9 +14,13 @@
     {
         public int RequestID { get; set; }
         public string CompanyName { get; set; }
+        public string ContactEmail { get; set; }
+        public string ContactPhone { get; set; }
         public string ProjectDescription { get; set; }
+        public string ProjectImpact { get; set; }
         public decimal RequestedAmount { get; set; }
         public string Status { get; set; }
+        public string AdminMessage { get; set; }
         public DateTime SubmittedAt { get; set; }
     }
 }

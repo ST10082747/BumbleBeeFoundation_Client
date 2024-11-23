@@ -1,74 +1,183 @@
 ﻿@model List<BumbleBeeFoundation_Client.Models.Document>
-
 @{
     ViewBag.Title = "Document Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Group documents by FundingRequestID
+    var groupedDocuments = Model.GroupBy(d => d.FundingRequestID);
 }
 
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold">Document Management</h1>
+                    <p class="text-muted">Manage and track document submissions</p>
+                </div>
+                <div>
+                    <a asp-action="Dashboard" asp-controller="Admin" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h1 class="text-center document-management-title">Document Management</h1>
-<p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a></p>
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <input type="text" id="documentSearch" class="form-control" placeholder="Search documents...">
+                        <select class="form-select" id="statusFilter" style="max-width: 200px;">
+                            <option value="">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Documents Received">Documents Received</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Document Name</th>
-            <th>Document Type</th>
-            <th>Company</th>
-            <th>Upload Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var document in Model)
-        {
-            <tr>
-                <td>@document.DocumentName</td>
-                <td>@document.DocumentType</td>
-                <td>@document.CompanyName</td>
-                <td>@document.UploadDate.ToString("yyyy-MM-dd")</td>
-                <td>@document.Status</td>
-                <td>
-                    @if (document.Status == "Pending")
-                    {
-                        @using (Html.BeginForm("ApproveDocument", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
-                        {
-                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                        }
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                @foreach (var group in groupedDocuments)
+                {
+                    
+                    var firstDocument = group.First();
+                    var projectDescription = firstDocument.ProjectDescription;
+                    var companyName = firstDocument.CompanyName;
 
-                        @using (Html.BeginForm("RejectDocument", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
-                        {
-                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                        }
-                    }
-                    else if (document.Status == "Approved")
-                    {
-                        @using (Html.BeginForm("DocumentsReceived", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
-                        {
-                            <button type="submit" class="btn btn-info btn-sm">Mark Documents Received</button>
-                        }
-                    }
-                    else if (document.Status == "Documents Received")
-                    {
-                        // Mark as Received and provide a "Close Request" button
-                        @using (Html.BeginForm("CloseRequest", "Admin", new { documentId = document.DocumentID }, FormMethod.Post, null, new { style = "display:inline;" }))
-                        {
-                            <button type="submit" class="btn btn-secondary btn-sm">Close Request</button>
-                        }
-                    }
-                    else if (document.Status == "Closed")
-                    {
-                        <span class="btn btn-secondary btn-sm" disabled>Request Closed</span>
-                    }
+                    <div class="my-3">
+                        <h5 class="text-muted">Supporting Documents for: <strong>@projectDescription</strong> (Company: @companyName)</h5>
+                       
+                        <table class="table table-hover table-bordered mb-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-3">Document Name</th>
+                                    <th>Document Type</th>
+                                    <th>Upload Date</th>
+                                    <th>Status</th>
+                                    <th class="text-end px-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var document in group)
+                                {
+                                    <tr>
+                                        <td class="px-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="far fa-file-alt text-primary me-2"></i>
+                                                <div>
+                                                    <div class="fw-semibold">@document.DocumentName</div>
+                                                    <small class="text-muted">ID: @document.DocumentID</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@document.DocumentType</td>
+                                        <td>
+                                            <div>@document.UploadDate.ToString("MMM dd, yyyy")</div>
+                                            <small class="text-muted">@document.UploadDate.ToString("HH:mm")</small>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusClass = document.Status switch
+                                                {
+                                                    "Pending" => "bg-warning",
+                                                    "Approved" => "bg-success",
+                                                    "Documents Received" => "bg-info",
+                                                    "Closed" => "bg-secondary",
+                                                    _ => "bg-light"
+                                                };
+                                            }
+                                            <span class="badge @statusClass">@document.Status</span>
+                                        </td>
+                                        <td class="text-end px-3">
+                                            <div class="btn-group">
+                                                @if (document.Status == "Pending")
+                                                {
+                                                    <form asp-action="ApproveDocument" asp-controller="Admin" method="post" class="d-inline">
+                                                        <input type="hidden" name="documentId" value="@document.DocumentID" />
+                                                        <button type="submit" class="btn btn-success" data-bs-toggle="tooltip" title="Approve Document">
+                                                            <i class="fas fa-check"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                    <form asp-action="RejectDocument" asp-controller="Admin" method="post" class="d-inline ms-1">
+                                                        <input type="hidden" name="documentId" value="@document.DocumentID" />
+                                                        <button type="submit" class="btn btn-danger" data-bs-toggle="tooltip" title="Reject Document">
+                                                            <i class="fas fa-times"></i> Reject
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (document.Status == "Approved")
+                                                {
+                                                    <form asp-action="DocumentsReceived" asp-controller="Admin" method="post" class="d-inline">
+                                                        <input type="hidden" name="documentId" value="@document.DocumentID" />
+                                                        <button type="submit" class="btn btn-info" data-bs-toggle="tooltip" title="Mark as Received">
+                                                            <i class="fas fa-inbox"></i> Mark as Received
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (document.Status == "Documents Received")
+                                                {
+                                                    <form asp-action="CloseRequest" asp-controller="Admin" method="post" class="d-inline">
+                                                        <input type="hidden" name="documentId" value="@document.DocumentID" />
+                                                        <button type="submit" class="btn btn-secondary" data-bs-toggle="tooltip" title="Close Request">
+                                                            <i class="fas fa-archive"></i> Close
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <a href="@Url.Action("DownloadDocument", "Admin", new { documentId = document.DocumentID })"
+                                                   class="btn btn-primary ms-1"
+                                                   target="_blank"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Download Document">
+                                                    <i class="fas fa-download"></i> Download
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
-                    @Html.ActionLink("Download", "DownloadDocument", "Admin", new { documentId = document.DocumentID }, new { @class = "btn btn-primary btn-sm", target = "_blank" })
-                </td>
+@section Scripts {
+    <script>
+               $(document).ready(function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
 
-            </tr>
-        }
-    </tbody>
-</table>
+            // Document search functionality
+            $("#documentSearch").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("table tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
 
+            // Status filter
+            $("#statusFilter").on("change", function() {
+                var value = $(this).val().toLowerCase();
+                $("table tbody tr").filter(function() {
+                   
+                    var status = $(this).find("td:eq(3)").find("span").text().toLowerCase();
+                    $(this).toggle(value === "" || status.indexOf(value) > -1);
+                });
+            });
+        });
+
+    </script>
+}
 

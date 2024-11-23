@@ -6,9 +6,17 @@
     ViewBag.Title = "Donation Report";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var southAfricanCulture = new CultureInfo("af-ZA");
-}
 
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+    // Group donations by donation date (ignoring the time portion)
+    var donationsGroupedByDate = Model
+        .GroupBy(d => d.DonationDate.Date)
+        .OrderBy(g => g.Key)  // Optional: ensures the dates are ordered chronologically
+        .ToList();
+
+    var totalDonations = Model.Count;
+    var totalAmount = Model.Sum(d => d.DonationAmount);
+    var averageDonationAmount = totalAmount / totalDonations;
+}
 
 <h1 class="text-center donation-report-title">Donation Report</h1>
 
@@ -20,33 +28,99 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Donation ID</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount (ZAR)</th> 
-                <th>Donor Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var donation in Model)
-            {
-                <tr>
-                    <td>@donation.DonationID</td>
-                    <td>@donation.DonationDate.ToString("yyyy-MM-dd")</td>
-                    <td>@donation.DonationType</td>
-                    <td>@donation.DonationAmount.ToString("C", southAfricanCulture)</td>
-                    <td>@donation.DonorName</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <!-- Donation Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Donation Details</h5>
+            <p class="text-muted">View a breakdown of donations made to the foundation, and available funds to allocate to projects</p>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>Donation ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount (ZAR)</th>
+                        <th>Donor Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var group in donationsGroupedByDate)
+                    {
+                        <tr>
+                            <td colspan="5" class="table-secondary">
+                                <strong>@group.Key.ToString("yyyy-MM-dd")</strong>
+                            </td>
+                        </tr>
 
-    <div>
-        <h3>Summary</h3>
-        <p>Total Donations: @Model.Count</p>
-        <p>Total Amount: @Model.Sum(d => d.DonationAmount).ToString("C", southAfricanCulture)</p>
+                        @foreach (var donation in group)
+                        {
+                            <tr>
+                                <td>@donation.DonationID</td>
+                                <td>@donation.DonationDate.ToString("yyyy-MM-dd")</td>
+                                <td>@donation.DonationType</td>
+                                <td>@donation.DonationAmount.ToString("C", southAfricanCulture)</td>
+                                <td>@donation.DonorName</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="row">
+        <div class="col-12 col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Total Donations</h5>
+                </div>
+                <div class="card-body">
+                    <p class="h4">@totalDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Total Amount</h5>
+                </div>
+                <div class="card-body">
+                    <p class="h4">@totalAmount.ToString("C", southAfricanCulture)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Average Donation</h5>
+                </div>
+                <div class="card-body">
+                    <p class="h4">@averageDonationAmount.ToString("C", southAfricanCulture)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Type Breakdown -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Donation Type Breakdown</h5>
+        </div>
+        <div class="card-body">
+            @foreach (var group in donationsGroupedByDate)
+            {
+                <h6>@group.Key.ToString("yyyy-MM-dd")</h6>
+                <p>Total Amount: @group.Sum(d => d.DonationAmount).ToString("C", southAfricanCulture)</p>
+                <p>Total Donations: @group.Count()</p>
+                <p>Average Donation: @group.Average(d => d.DonationAmount).ToString("C", southAfricanCulture)</p>
+                <hr />
+            }
+        </div>
     </div>
 }
+

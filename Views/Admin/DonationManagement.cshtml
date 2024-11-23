@@ -1,78 +1,234 @@
 ﻿@model IEnumerable<BumbleBeeFoundation_Client.Models.Donation>
-
 @{
     ViewData["Title"] = "Donation Management";
+    var groupedDonations = Model.GroupBy(d => d.DonationDate.Date)
+                                .OrderByDescending(g => g.Key);
 }
+
 <link href="~/css/bumblebee-theme.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-<h1 class="text-center company-management-title">Donation Management</h1>
+<style>
+    .date-section {
+        margin-bottom: 2rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 2px solid #2c3e50;
+    }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
+    .date-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 3px solid #2c3e50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.DonationDate)</th>
-            <th>@Html.DisplayNameFor(model => model.DonationType)</th>
-            <th>@Html.DisplayNameFor(model => model.DonationAmount)</th>
-            <th>@Html.DisplayNameFor(model => model.DonorName)</th>
-            <th>@Html.DisplayNameFor(model => model.DonorEmail)</th>
-            <th>@Html.DisplayNameFor(model => model.PaymentStatus)</th>
-            <th>Document</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.DonationDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.DonationType)</td>
-                
-                <td>R @item.DonationAmount.ToString("N2")</td>
-                <td>@Html.DisplayFor(modelItem => item.DonorName)</td>
-                <td>@Html.DisplayFor(modelItem => item.DonorEmail)</td>
-                <td>@Html.DisplayFor(modelItem => item.PaymentStatus)</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.DocumentFileName))
-                    {
-                        <a asp-action="DownloadFile"
-                           asp-route-id="@item.DonationID"
-                           class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">No document</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="DonationDetails" asp-route-id="@item.DonationID" class="btn btn-info btn-sm">Details</a>
-                    @if (item.PaymentStatus != "Processed")
-                    {
-                        <form asp-action="ApproveDonation" asp-route-id="@item.DonationID" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this donation?')">
-                                Approve Donation and Email Section 18 Certificate
-                            </button>
-                        </form>
-                    }
-                </td>
-            </tr>
+        .date-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
-    </tbody>
-</table>
 
-<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a>
+    .daily-total {
+        background-color: #e9ecef;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+        .table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border: 1.5px solid #34495e;
+        }
+
+    .download-section {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .donation-type-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .donation-type-money {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .donation-type-goods {
+        background-color: #f3e5f5;
+        color: #7b1fa2;
+    }
+
+    .donation-count {
+        font-size: 0.9rem;
+        color: #666;
+        margin-left: 10px;
+    }
+
+    .badge.bg-success {
+        background-color: #d1e7dd !important;
+        color: #0a5139;
+        border: 1px solid #badbcc;
+    }
+
+    .badge.bg-warning {
+        background-color: #fff3cd !important;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+
+    .badge.bg-primary {
+        background-color: #cfe2ff !important;
+        color: #084298;
+        border: 1px solid #b6d4fe;
+    }
+
+    .badge.bg-secondary {
+        background-color: #e2e3e5 !important;
+        color: #41464b;
+        border: 1px solid #d3d6d8;
+    }
+</style>
+
+
+<div class="container mt-4">
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">@ViewBag.Message</p>
+        </div>
+    }
+
+    <div class="download-section">
+        <h1 class="donation-history-title mb-3">@ViewData["Title"]</h1>
+        <p class="text-muted">Manage donations from users and companies</p>
+    </div>
+
+    @foreach (var dateGroup in groupedDonations)
+    {
+        var dailyTotal = dateGroup.Sum(d => d.DonationAmount);
+        var donationCount = dateGroup.Count();
+
+        <div class="date-section">
+            <div class="date-header">
+                <div>
+                    <h3>
+                        @dateGroup.Key.ToString("dddd, MMMM d, yyyy")
+                        <span class="donation-count">(@donationCount donation@(donationCount != 1 ? "s" : ""))</span>
+                    </h3>
+                </div>
+                <span class="daily-total">
+                    Daily Total: R @dailyTotal.ToString("N2")
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Donation ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Donor Name</th>
+                            <th>Payment Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var donation in dateGroup.OrderByDescending(d => d.DonationAmount))
+                        {
+                            <tr>
+                                <td>@donation.DonationID</td>
+                                <td>
+                                    <span class="donation-type-badge @(donation.DonationType.ToLower() == "money" ? "donation-type-money" : "donation-type-goods")">
+                                        @donation.DonationType
+                                    </span>
+                                </td>
+                                <td>R @donation.DonationAmount.ToString("N2")</td>
+                                <td>@donation.DonorName</td>
+                                <td>
+                                    @{
+                                        var statusClass = donation.PaymentStatus switch
+                                        {
+                                            "Processed" => "bg-success",
+                                            "Pending" => "bg-warning",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@donation.PaymentStatus</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="DonationDetails" asp-route-id="@donation.DonationID" class="btn btn-outline-info btn-sm">
+                                            <i class="bi bi-info-circle me-1"></i> Details
+                                        </a>
+                                        @if (donation.PaymentStatus != "Processed")
+                                        {
+                                            <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal-@donation.DonationID">
+                                                <i class="bi bi-check-circle me-1"></i> Approve
+                                            </button>
+
+                                            <!-- Approve Modal -->
+                                            <div class="modal fade" id="approveModal-@donation.DonationID" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Approve Donation</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to approve this donation?</p>
+                                                            <ul class="list-unstyled">
+                                                                <li><strong>Donor:</strong> @donation.DonorName</li>
+                                                                <li><strong>Amount:</strong> R @donation.DonationAmount.ToString("N2")</li>
+                                                                <li><strong>Date:</strong> @donation.DonationDate.ToString("MMM dd, yyyy")</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form asp-action="ApproveDonation" asp-route-id="@donation.DonationID" method="post">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-success">
+                                                                    <i class="bi bi-check-circle me-1"></i> Approve & Send Certificate
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

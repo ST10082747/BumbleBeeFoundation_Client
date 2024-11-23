@@ -1,57 +1,166 @@
 ﻿@using System.Globalization
-
 @model List<BumbleBeeFoundation_Client.Models.FundingRequestReportItem>
 
 @{
     ViewBag.Title = "Funding Request Report";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var southAfricanCulture = new CultureInfo("af-ZA");
-}
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1 class="text-center funding-request-report-title">Funding Request Report</h1>
-<p><a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">Back To Dashboard</a></p>
-
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-warning">
-        <strong>No funding requests available to display.</strong>
-    </div>
+    var groupedRequests = Model?.GroupBy(r => r.Status).ToDictionary(g => g.Key, g => g.ToList());
+    var totalRequested = Model?.Sum(r => r.RequestedAmount) ?? 0;
+    var monthlyGroups = Model?.GroupBy(r => new { r.SubmittedAt.Year, r.SubmittedAt.Month })
+        .OrderByDescending(g => g.Key.Year)
+        .ThenByDescending(g => g.Key.Month)
+        .Take(12)
+        .ToDictionary(
+            g => new DateTime(g.Key.Year, g.Key.Month, 1),
+            g => g.ToList()
+        );
 }
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Request ID</th>
-                <th>Company Name</th>
-                <th>Project Description</th>
-                <th>Requested Amount (ZAR)</th>
-                <th>Status</th>
-                <th>Submitted At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>@request.RequestID</td>
-                    <td>@request.CompanyName</td>
-                    <td>@request.ProjectDescription</td>
-                    <td>@request.RequestedAmount.ToString("C", southAfricanCulture)</td>
-                    <td>@request.Status</td>
-                    <td>@request.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-    <div>
-        <h3>Summary</h3>
-        <p>Total Requests: @Model.Count</p>
-        <p>Total Requested Amount: @Model.Sum(r => r.RequestedAmount).ToString("C", southAfricanCulture)</p>
-        <p>Pending Requests: @Model.Count(r => r.Status == "Pending")</p>
-        <p>Approved Requests: @Model.Count(r => r.Status == "Approved")</p>
-        <p>Rejected Requests: @Model.Count(r => r.Status == "Rejected")</p>
-    </div>
+<div class="container-fluid mt-4">
+    <h1 class="text-center mb-4">Funding Request Report</h1>
+    <p class="text-muted">Get an overview of company and funding statistics</p>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning">
+            <strong>No funding requests available to display.</strong>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Summary Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total Requests:</strong> @Model.Count</p>
+                        <p><strong>Total Amount Requested:</strong> @totalRequested.ToString("C", southAfricanCulture)</p>
+                        @foreach (var status in groupedRequests)
+                        {
+                            <p>
+                                <strong>@status.Key:</strong> @status.Value.Count requests
+                                (@status.Value.Sum(r => r.RequestedAmount).ToString("C", southAfricanCulture))
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Monthly Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Number of Requests</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var month in monthlyGroups)
+                                    {
+                                        <tr>
+                                            <td>@month.Key.ToString("MMMM yyyy")</td>
+                                            <td>@month.Value.Count</td>
+                                            <td>@month.Value.Sum(r => r.RequestedAmount).ToString("C", southAfricanCulture)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @foreach (var statusGroup in groupedRequests)
+        {
+            <div class="card mb-4">
+                <div class="card-header @GetStatusHeaderClass(statusGroup.Key)">
+                    <h5 class="mb-0 text-white">@statusGroup.Key Requests (@statusGroup.Value.Count)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Company</th>
+                                    <th>Contact Info</th>
+                                    <th>Project Details</th>
+                                    <th>Amount (ZAR)</th>
+                                    <th>Submitted</th>
+                                    <th>Admin Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in statusGroup.Value)
+                                {
+                                    <tr>
+                                        <td>@request.RequestID</td>
+                                        <td>@request.CompanyName</td>
+                                        <td>
+                                            <div>📧 @request.ContactEmail</div>
+                                            <div>📱 @request.ContactPhone</div>
+                                        </td>
+                                        <td>
+                                            <div><strong>Description:</strong> @request.ProjectDescription</div>
+                                            @if (!string.IsNullOrEmpty(request.ProjectImpact))
+                                            {
+                                                <div><strong>Impact:</strong> @request.ProjectImpact</div>
+                                            }
+                                        </td>
+                                        <td>@request.RequestedAmount.ToString("C", southAfricanCulture)</td>
+                                        <td>@request.SubmittedAt.ToString("yyyy-MM-dd")</td>
+                                        <td>@(string.IsNullOrEmpty(request.AdminMessage) ? "-" : request.AdminMessage)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@functions {
+    private string GetStatusHeaderClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-warning",
+            "approved" => "bg-success",
+            "rejected" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
 }
+
+
+    <style>
+        .card-header.bg-warning {
+            background-color: #ffc107 !important;
+        }
+
+        .card-header.bg-success {
+            background-color: #28a745 !important;
+        }
+
+        .card-header.bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+

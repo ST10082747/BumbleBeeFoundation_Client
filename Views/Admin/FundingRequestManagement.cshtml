@@ -2,95 +2,185 @@
 
 @{
     ViewData["Title"] = "Funding Request Management";
+    var groupedRequests = Model.GroupBy(r => r.Status)
+                                .OrderByDescending(g => g.Key);
 }
-<link href="~/css/bumblebee-theme.css" rel="stylesheet" />
 
-<h1 class="text-center company-management-title">Funding Request Management</h1>
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4 text-dark fw-bold">Funding Request Management</h1>
+            <p class="text-muted">Approve or manage funding requests made by companies</p>
+            <hr class="mb-4">
+        </div>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.First().CompanyName)</th>
-            <th>@Html.DisplayNameFor(model => model.First().RequestedAmount)</th>
-            <th>@Html.DisplayNameFor(model => model.First().ProjectDescription)</th>
-            <th>@Html.DisplayNameFor(model => model.First().ProjectImpact)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Status)</th>
-            <th>@Html.DisplayNameFor(model => model.First().SubmittedAt)</th>
-            <th>@Html.DisplayNameFor(model => model.First().AdminMessage)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.CompanyName)</td>
-                <td>R @item.RequestedAmount.ToString("N2")</td> 
-                <td>@Html.DisplayFor(modelItem => item.ProjectDescription)</td>
-                <td>@Html.DisplayFor(modelItem => item.ProjectImpact)</td>
-                <td>@Html.DisplayFor(modelItem => item.Status)</td>
-                <td>@Html.DisplayFor(modelItem => item.SubmittedAt)</td>
-                <td>@Html.DisplayFor(modelItem => item.AdminMessage)</td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-info btn-sm">Details</a>
-                        @if (item.HasAttachments.GetValueOrDefault())
-                        {
-                            <a asp-action="ViewAttachments" asp-route-requestId="@item.RequestID" class="btn btn-primary btn-sm">View Attachments</a>
-                        }
+    @foreach (var statusGroup in groupedRequests)
+    {
+        var statusLabel = statusGroup.Key;
+        var requestCount = statusGroup.Count();
 
-
-                        @if (item.Status == "Pending")
-                        {
-                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal-@item.RequestID">Approve</button>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal-@item.RequestID">Reject</button>
-
-                            <!-- Approve Modal -->
-                            <div class="modal fade" id="approveModal-@item.RequestID" tabindex="-1" aria-labelledby="approveModalLabel-@item.RequestID" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="approveModalLabel-@item.RequestID">Approve Funding Request</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <span class="badge bg-secondary">@statusLabel</span>
+                    (<span class="text-muted">@requestCount requests</span>)
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3">@Html.DisplayNameFor(model => model.First().CompanyName)</th>
+                                <th class="py-3">@Html.DisplayNameFor(model => model.First().RequestedAmount)</th>
+                                <th class="py-3">@Html.DisplayNameFor(model => model.First().ProjectDescription)</th>
+                                <th class="py-3">@Html.DisplayNameFor(model => model.First().SubmittedAt)</th>
+                                <th class="py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in statusGroup.OrderByDescending(r => r.SubmittedAt))
+                            {
+                                <tr>
+                                    <td class="py-3">
+                                        <span class="fw-medium">@item.CompanyName</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-medium">R @item.RequestedAmount.ToString("N2")</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <div title="@item.ProjectDescription" class="text-truncate">
+                                            @item.ProjectDescription
                                         </div>
-                                        <div class="modal-body">
-                                            <form asp-action="ApproveFundingRequest" asp-route-id="@item.RequestID" method="post">
-                                                <div class="mb-3">
-                                                    <label for="adminMessage-@item.RequestID" class="form-label">Approval Message</label>
-                                                    <textarea id="adminMessage-@item.RequestID" name="AdminMessage" class="form-control" placeholder="Enter your approval message" required></textarea>
+                                    </td>
+                                    <td class="py-3">@item.SubmittedAt.ToString("MMM dd, yyyy")</td>
+                                    <td class="py-3">
+                                        <div class="d-flex gap-2">
+                                            <a asp-action="FundingRequestDetails" asp-route-id="@item.RequestID" class="btn btn-outline-info btn-sm">
+                                                <i class="bi bi-info-circle me-1"></i> Details
+                                            </a>
+
+                                            @if (item.HasAttachments.GetValueOrDefault())
+                                            {
+                                                <a asp-action="ViewAttachments" asp-route-requestId="@item.RequestID" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-paperclip me-1"></i> Attachments
+                                                </a>
+                                            }
+
+                                            @if (item.Status == "Pending")
+                                            {
+                                                <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal-@item.RequestID">
+                                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal-@item.RequestID">
+                                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                                </button>
+
+                                                <!-- Approve Modal -->
+                                                <div class="modal fade" id="approveModal-@item.RequestID" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Approve Funding Request</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <h6>Request Details</h6>
+                                                                <ul class="list-unstyled text-muted small">
+                                                                    <li><strong>Company:</strong> @item.CompanyName</li>
+                                                                    <li><strong>Amount:</strong> R @item.RequestedAmount.ToString("N2")</li>
+                                                                    <li><strong>Submitted:</strong> @item.SubmittedAt.ToString("MMM dd, yyyy")</li>
+                                                                </ul>
+                                                                <form asp-action="ApproveFundingRequest" asp-route-id="@item.RequestID" method="post">
+                                                                    <div class="mb-3">
+                                                                        <label for="adminMessage-@item.RequestID" class="form-label">Approval Message</label>
+                                                                        <textarea id="adminMessage-@item.RequestID" name="AdminMessage" class="form-control" rows="3" placeholder="Enter your approval message" required></textarea>
+                                                                    </div>
+                                                                    <div class="text-end">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-success">
+                                                                            <i class="bi bi-check-circle me-1"></i> Approve Request
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <button type="submit" class="btn btn-success">Approve</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Reject Modal -->
-                            <div class="modal fade" id="rejectModal-@item.RequestID" tabindex="-1" aria-labelledby="rejectModalLabel-@item.RequestID" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="rejectModalLabel-@item.RequestID">Reject Funding Request</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <!-- Reject Modal -->
+                                                <div class="modal fade" id="rejectModal-@item.RequestID" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Reject Funding Request</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <h6>Request Details</h6>
+                                                                <ul class="list-unstyled text-muted small">
+                                                                    <li><strong>Company:</strong> @item.CompanyName</li>
+                                                                    <li><strong>Amount:</strong> R @item.RequestedAmount.ToString("N2")</li>
+                                                                    <li><strong>Submitted:</strong> @item.SubmittedAt.ToString("MMM dd, yyyy")</li>
+                                                                </ul>
+                                                                <form asp-action="RejectFundingRequest" asp-route-id="@item.RequestID" method="post">
+                                                                    <div class="mb-3">
+                                                                        <label for="rejectMessage-@item.RequestID" class="form-label">Rejection Reason</label>
+                                                                        <textarea id="rejectMessage-@item.RequestID" name="AdminMessage" class="form-control" rows="3" placeholder="Enter reason for rejection" required></textarea>
+                                                                    </div>
+                                                                    <div class="text-end">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="bi bi-x-circle me-1"></i> Reject Request
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
                                         </div>
-                                        <div class="modal-body">
-                                            <p>Are you sure you want to reject this funding request?</p>
-                                            <form asp-action="RejectFundingRequest" asp-route-id="@item.RequestID" method="post">
-                                                <button type="submit" class="btn btn-danger">Yes, Reject</button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
 
-<a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary w-100 mt-4">Back To Dashboard</a>
+    <div class="row mt-4">
+        <div class="col">
+            <a asp-action="Dashboard" asp-controller="Admin" class="btn btn-primary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+<style>
+    .badge.bg-success {
+        background-color: #d1e7dd !important;
+        color: #0a5139;
+    }
+
+    .badge.bg-warning {
+        background-color: #fff3cd !important;
+        color: #856404;
+    }
+
+    .badge.bg-danger {
+        background-color: #f8d7da !important;
+        color: #842029;
+    }
+
+    .badge.bg-secondary {
+        background-color: #e2e3e5 !important;
+        color: #41464b;
+    }
+</style>
