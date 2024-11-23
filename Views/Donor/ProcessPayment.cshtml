@@ -1,0 +1,143 @@
+﻿@model PayFastViewModel
+@{
+    ViewData["Title"] = "Processing Payment";
+}
+
+<div class="processing-container">
+    <div class="processing-content">
+        <div class="logo-container">
+            <img src="/images/Logo.png" alt="Logo" class="company-logo" />
+        </div>
+
+        <div class="progress-container">
+            <div class="spinner"></div>
+            <h2>Processing Your Donation</h2>
+            <p>Please wait while we redirect you to our secure payment gateway...</p>
+
+            <div class="donation-details">
+                <div class="detail-item">
+                    <span>Amount:</span>
+                    <strong>R @Model.Amount</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Reference:</span>
+                    <strong>#@Model.PaymentId</strong>
+                </div>
+            </div>
+        </div>
+
+        <form id="PayFastForm" action="@Model.PayFastUrl" method="post" style="display: none;">
+            <input type="hidden" name="merchant_id" value="@Model.MerchantId" />
+            <input type="hidden" name="merchant_key" value="@Model.MerchantKey" />
+            <input type="hidden" name="name_first" value="@Model.NameFirst" />
+            <input type="hidden" name="email_address" value="@Model.EmailAddress" />
+            <input type="hidden" name="m_payment_id" value="@Model.PaymentId" />
+            <input type="hidden" name="amount" value="@Model.Amount" />
+            <input type="hidden" name="item_name" value="@Model.ItemName" />
+            <input type="hidden" name="payment_method" value="@Model.PaymentMethod" />
+            <input type="hidden" name="signature" value="@Model.Signature" />
+        </form>
+    </div>
+</div>
+
+<style>
+    .processing-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8fafc;
+    }
+
+    .processing-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .logo-container {
+        margin-bottom: 2rem;
+    }
+
+    .company-logo {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .progress-container {
+        margin: 2rem 0;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    h2 {
+        color: #2d3748;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    p {
+        color: #718096;
+        margin-bottom: 2rem;
+    }
+
+    .donation-details {
+        background-color: #f7fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-item span {
+            color: #718096;
+        }
+
+        .detail-item strong {
+            color: #2d3748;
+        }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        setTimeout(function() {
+            document.getElementById('PayFastForm').submit();
+        }, 3500);
+    });
+</script>

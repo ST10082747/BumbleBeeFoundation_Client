@@ -66,6 +66,7 @@ namespace BumbleBeeFoundation_Client.Controllers
         }
 
         // Process the donation made by the user
+        
         [HttpPost]
         public async Task<IActionResult> Donate(DonationViewModel model, IFormFile? documentUpload)
         {
@@ -89,20 +90,32 @@ namespace BumbleBeeFoundation_Client.Controllers
                 // Set donation ID for email
                 model.DonationId = donationId;
 
-                // Send email notification
-                try
-                {
-                    await _emailService.SendDonationNotificationAsync(model);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to send donation notification email.");
-                    // Continue processing even if email fails
-                }
+                // Send email notification asynchronously without waiting
+                _ = _emailService.SendDonationNotificationAsync(model)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                            _logger.LogError(t.Exception, "Failed to send donation notification email.");
+                    });
 
-                // Generate PayFast form
-                string formHtml = GeneratePayFastForm(model, donationId);
-                return Content(formHtml, "text/html");
+                // Pass the data to a view
+                var payFastData = new PayFastViewModel
+                {
+                    MerchantId = _payFastSettings.MerchantId,
+                    MerchantKey = _payFastSettings.MerchantKey,
+                    NameFirst = model.DonorName?.Trim(),
+                    EmailAddress = model.DonorEmail?.Trim(),
+                    PaymentId = donationId.ToString(),
+                    Amount = model.DonationAmount.ToString("F2", CultureInfo.InvariantCulture),
+                    ItemName = $"Funding Donation - {model.DonationType}".Trim(),
+                    PaymentMethod = model.DonationType == "Monthly" ? "eft" : "",
+                    Signature = GeneratePayFastSignature(model, donationId),
+                    PayFastUrl = _payFastSettings.UseSandbox
+                        ? "https://sandbox.payfast.co.za/eng/process"
+                        : "https://www.payfast.co.za/eng/process"
+                };
+
+                return View("ProcessPayment", payFastData);
             }
             catch (Exception ex)
             {
@@ -110,6 +123,23 @@ namespace BumbleBeeFoundation_Client.Controllers
                 ModelState.AddModelError(string.Empty, "An error occurred while processing your donation.");
                 return View(model);
             }
+        }
+
+        private string GeneratePayFastSignature(DonationViewModel model, int donationId)
+        {
+            var payFastRequest = new PayFastRequest
+            {
+                merchant_id = _payFastSettings.MerchantId,
+                merchant_key = _payFastSettings.MerchantKey,
+                name_first = model.DonorName?.Trim(),
+                email_address = model.DonorEmail?.Trim(),
+                m_payment_id = donationId.ToString(),
+                amount = model.DonationAmount.ToString("F2", CultureInfo.InvariantCulture),
+                item_name = $"Funding Donation - {model.DonationType}".Trim(),
+                payment_method = model.DonationType == "Monthly" ? "eft" : ""
+            };
+
+            return payFastRequest.GenerateSignature(_payFastSettings.PassPhrase);
         }
 
         // Save the donation information to the database
@@ -147,45 +177,6 @@ namespace BumbleBeeFoundation_Client.Controllers
 
             _logger.LogError($"API call failed: {apiResponse?.Message ?? "Unknown error"}");
             return 0;
-        }
-
-        // Generate the PayFast gateway form after donation data is verified
-        private string GeneratePayFastForm(DonationViewModel model, int donationId)
-        {
-            var payFastRequest = new PayFastRequest
-            {
-                merchant_id = _payFastSettings.MerchantId,
-                merchant_key = _payFastSettings.MerchantKey,
-                name_first = model.DonorName?.Trim(),
-                email_address = model.DonorEmail?.Trim(),
-                m_payment_id = donationId.ToString(),
-                amount = model.DonationAmount.ToString("F2", CultureInfo.InvariantCulture),
-                item_name = $"Funding Donation - {model.DonationType}".Trim(),
-                payment_method = model.DonationType == "Monthly" ? "eft" : ""
-            };
-
-            string signature = payFastRequest.GenerateSignature(_payFastSettings.PassPhrase);
-            var form = new StringBuilder();
-            form.Append("<form action='");
-            form.Append(_payFastSettings.UseSandbox ?
-                "https://sandbox.payfast.co.za/eng/process" :
-                "https://www.payfast.co.za/eng/process");
-            form.Append("' method='post' id='PayFastForm'>");
-
-            foreach (var prop in payFastRequest.GetType().GetProperties())
-            {
-                var value = prop.GetValue(payFastRequest);
-                if (value != null && !string.IsNullOrEmpty(value.ToString()))
-                {
-                    form.Append($"<input type='hidden' name='{prop.Name}' value='{HttpUtility.HtmlEncode(value.ToString().Trim())}' />");
-                }
-            }
-
-            form.Append($"<input type='hidden' name='signature' value='{HttpUtility.HtmlEncode(signature)}' />");
-            form.Append("</form>");
-            form.Append("<script>document.getElementById('PayFastForm').submit();</script>");
-
-            return form.ToString();
         }
 
         // Check if the user ID number is the correct length
