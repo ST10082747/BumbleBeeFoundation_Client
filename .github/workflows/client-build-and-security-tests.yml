@@ -1,0 +1,64 @@
+name: .NET MVC Client Build and Analysis
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build with analysis
+      run: |
+        dotnet build --configuration Release /p:AnalysisMode=All /p:AnalysisLevel=8.0 /p:EnableNETAnalyzers=true /p:EnforceCodeStyleInBuild=true > analysis_output.txt
+      continue-on-error: true
+      
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+      
+    - name: Analyze views
+      run: |
+        echo "## MVC View Analysis" >> analysis_output.txt
+        echo "Checking Razor views compilation..." >> analysis_output.txt
+        dotnet build --configuration Release /p:PreserveCompilationContext=true /p:MvcRazorCompileOnPublish=true >> analysis_output.txt
+      continue-on-error: true
+      
+    - name: Process analysis results
+      run: |
+        echo "# MVC Client Analysis Report" > analysis_report.md
+        echo "## Build and Analysis Messages" >> analysis_report.md
+        echo '```' >> analysis_report.md
+        cat analysis_output.txt >> analysis_report.md
+        echo '```' >> analysis_report.md
+        
+        # Add summary section
+        echo -e "\n## Summary" >> analysis_report.md
+        echo "Analysis checked:" >> analysis_report.md
+        echo "- Controllers" >> analysis_report.md
+        echo "- Models" >> analysis_report.md
+        echo "- Services" >> analysis_report.md
+        echo "- Razor Views" >> analysis_report.md
+        echo "- Project Dependencies" >> analysis_report.md
+        
+        # Extract warning count
+        WARNINGS=$(grep -c "warning" analysis_output.txt || echo "0")
+        echo -e "\nTotal Warnings Found: $WARNINGS" >> analysis_report.md
+        
+    - name: Upload analysis report
+      uses: actions/upload-artifact@v3
+      with:
+        name: mvc-analysis-report
+        path: analysis_report.md
