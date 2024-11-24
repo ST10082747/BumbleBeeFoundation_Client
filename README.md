@@ -119,7 +119,7 @@ To enable the currency converter feature, you must set up an environment variabl
 
 #### Create the Environment Variable:
 
--   Follow this guide: [How to create Environment Variables on Windows 11, 10](https://pureinfotech.com/create-environment-variables-windows-10/) to set up the environment variable on your PC.
+-   Follow this guide: [How to create Environment Variables on Windows](https://pureinfotech.com/create-custom-environment-variables-windows-10/) to set up the environment variable on your PC.
 -   Set the **variable name** to `CURRENCY_API_KEY`.
 -   Set the **variable value** to this API key: `cur_live_Sh7Xkf0mTPBUJYIPZdn7TPaj3RX0KQKcmJ2UgQ1N`
 
