@@ -173,7 +173,7 @@ namespace BumbleBeeFoundation_Client.Controllers
             }
         }
 
-        // POST: Delete User - Send delete request to the API
+        // POST: Delete User - Send delete request to the API 
         [HttpPost, ActionName("DeleteUser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUserConfirmed(int id)
@@ -191,8 +191,15 @@ namespace BumbleBeeFoundation_Client.Controllers
                 var deleteResponse = await _httpClient.DeleteAsync($"api/admin/users/{id}");
                 deleteResponse.EnsureSuccessStatusCode();
 
-                // Send account deletion notification
-                await _emailService.SendAccountDeletionNotificationAsync(user.Email, $"{user.FirstName} {user.LastName}");
+                // Attempt to send account deletion notification
+                try
+                {
+                    await _emailService.SendAccountDeletionNotificationAsync(user.Email, $"{user.FirstName} {user.LastName}");
+                }
+                catch (Exception emailException)
+                {
+                    _logger.LogWarning($"Failed to send account deletion notification to {user.Email}: {emailException.Message}");
+                }
 
                 return RedirectToAction(nameof(UserManagement));
             }
@@ -202,6 +209,7 @@ namespace BumbleBeeFoundation_Client.Controllers
                 return View("Error");
             }
         }
+
 
 
         // Company Management actions

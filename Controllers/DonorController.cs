@@ -78,6 +78,10 @@ namespace BumbleBeeFoundation_Client.Controllers
                     return View(model);
                 }
 
+                // Encrypt sensitive data before sending to the API
+                model.DonorIDNumber = EncryptionHelper.Encrypt(model.DonorIDNumber);
+                model.DonorTaxNumber = EncryptionHelper.Encrypt(model.DonorTaxNumber);
+
                 // Save donation to API
                 var donationId = await SaveDonationToApi(model, documentUpload);
 

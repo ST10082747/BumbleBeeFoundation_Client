@@ -28,10 +28,11 @@
             <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorName)</dd>
 
             <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorIDNumber)</dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorIDNumber)</dd>
+            <dd class="col-sm-9">@ObfuscationHelper.Obfuscate(Model.DonorIDNumber)</dd>
 
             <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorTaxNumber)</dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorTaxNumber)</dd>
+            <dd class="col-sm-9">@ObfuscationHelper.Obfuscate(Model.DonorTaxNumber)</dd>
+
 
             <dt class="col-sm-3 font-weight-bold">@Html.DisplayNameFor(model => model.DonorEmail)</dt>
             <dd class="col-sm-9">@Html.DisplayFor(model => model.DonorEmail)</dd>

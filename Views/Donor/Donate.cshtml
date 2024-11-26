@@ -208,47 +208,6 @@
                     <span asp-validation-for="DonorPhone" class="text-danger"></span>
                 </div>
 
-                <h3>Payment Information</h3>
-                <div class="payment-section">
-                    <div class="form-group">
-                        <label for="CardNumber" class="control-label">Card Number</label>
-                        <input id="CardNumber" name="CardNumber" class="form-control" placeholder="Card Number" required />
-                        <span class="text-danger" asp-validation-for="CardNumber"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="ExpiryMonth" class="control-label">Expiry Month</label>
-                                <select id="ExpiryMonth" name="ExpiryMonth" class="form-control" required>
-                                    @for (var month = 1; month <= 12; month++)
-                                    {
-                                        <option value="@month">@month</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="ExpiryYear" class="control-label">Expiry Year</label>
-                                <select id="ExpiryYear" name="ExpiryYear" class="form-control" required>
-                                    @for (var year = DateTime.Now.Year; year <= DateTime.Now.Year + 10; year++)
-                                    {
-                                        <option value="@year">@year</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="CVV" class="control-label">CVV</label>
-                                <input id="CVV" name="CVV" type="password" class="form-control" placeholder="CVV" required />
-                                <span class="text-danger" asp-validation-for="CVV"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="form-group mt-4">
                     <label asp-for="DocumentUpload" class="control-label"></label>
                     <input asp-for="DocumentUpload" type="file" class="form-control" />

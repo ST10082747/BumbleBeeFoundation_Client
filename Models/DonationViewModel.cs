@@ -44,26 +44,6 @@ namespace BumbleBeeFoundation_Client.Models
 
         public byte[]? DocumentPath { get; set; }
 
-       
-        [Required]
-        [Display(Name = "Card Number")]
-        [CreditCard]
-        public string CardNumber { get; set; }
-
-        [Required]
-        [Display(Name = "Expiry Month")]
-        [Range(1, 12, ErrorMessage = "Please enter a valid month.")]
-        public int ExpiryMonth { get; set; }
-
-        [Required]
-        [Display(Name = "Expiry Year")]
-        [Range(2024, 2034, ErrorMessage = "Please enter a valid year.")]
-        public int ExpiryYear { get; set; }
-
-        [Required]
-        [Display(Name = "CVV")]
-        [StringLength(4, MinimumLength = 3, ErrorMessage = "CVV must be 3 or 4 digits.")]
-        public string CVV { get; set; }
     }
 
     public class DonationResponse
